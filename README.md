@@ -2,7 +2,7 @@
 
 面向中国大陆网络环境的 **Loon 配置 + 多源聚合规则库**。目标不是简单搬运某一个规则仓库，而是把多个高质量上游统一解析、去重、校验，并通过 CN Guard 尽量避免国内域名误走代理。
 
-当前 V2 已拆分为 **52 个细粒度规则集**；实际规则总量、各分类条目数、上游 commit 与 CN Guard 移除数量以 `release/build/report.json` 为准。
+当前已拆分为 **52 个细粒度规则集**；规则可以继续细分，但生成到 Loon 的用户可见策略组刻意保持精简，并与现有 4LESS / ACL4SSR 使用习惯保持一致。实际规则总量、各分类条目数、上游 commit 与 CN Guard 移除数量以 `release/build/report.json` 为准。
 
 ## 🚀 直接使用
 
@@ -22,13 +22,14 @@ GitHub Actions 会把可使用的配置与规则发布到 `release` 分支。
 
 ## 设计原则
 
-1. **细粒度分类**：按 4LESS 一类的思路拆分 AI、社交、流媒体、开发、云存储、厂商、金融、游戏、国内应用、中国直连和国外代理等业务类别。
+1. **规则细、策略少**：规则文件按 AI、社交、流媒体、开发、云存储、厂商、金融、游戏、国内应用等继续细分；Loon 策略组统一折叠到少量 4LESS 风格业务组，避免“一个规则集一个策略组”。
 2. **多源聚合**：优先使用 `blackmatrix7/ios_rule_script`、`fmz200/wool_scripts`、`Loyalsoldier/surge-rules`、`felixonmars/dnsmasq-china-list`、`privacy-protection-tools/anti-AD`。
 3. **CN Guard**：代理规则生成前使用国内直连集合做域名冲突过滤；国内域名保护优先于“规则数量看起来很多”。
 4. **自动更新**：每天北京时间 02:23 自动拉取上游最新内容并生成 `release` 分支。
 5. **失败保护**：关键规则低于最低数量、关键测试域名缺失、规则数量异常骤降时，Actions 直接失败，不覆盖上一版可用规则。
-6. **可追溯**：记录上游 HEAD SHA、实际使用文件的 SHA256、每个规则集条目数和 CN Guard 移除数量。
-7. **插件不重复造轮子**：插件部分沿用可莉等成熟 Loon 插件生态，本项目重点维护规则、策略与自动化。
+6. **策略组防膨胀**：渲染器维护 4LESS 策略白名单；新增源策略若没有明确映射到现有组，构建直接失败。
+7. **可追溯**：记录上游 HEAD SHA、实际使用文件的 SHA256、每个规则集条目数和 CN Guard 移除数量。
+8. **插件不重复造轮子**：插件部分沿用可莉等成熟 Loon 插件生态，本项目重点维护规则、策略与自动化。
 
 ## 当前规则分类
 
@@ -42,19 +43,33 @@ rules/
 ├── Vendor/           # Google / Microsoft / Apple
 ├── Finance/          # PayPal / Binance / OKX
 ├── Game/             # Steam / Epic / PlayStation / Xbox / Nintendo / Blizzard / EA / Riot / Ubisoft
-├── ChinaApp/         # 抖音 / 小红书 / 快手 / 王者荣耀 / Soul（DIRECT）
+├── ChinaApp/         # 抖音 / 小红书 / 快手 / 王者荣耀 / Soul
 ├── China/            # Direct / ChinaIP
 ├── Proxy/            # Global
 ├── Ads/              # Reject
 └── Basic/            # LAN
 ```
 
-### 策略上的几个特殊处理
+## 4LESS 风格策略组
 
-- **国内 App**：独立生成规则并强制 `DIRECT`，同时加入 CN Guard 保护集合。
-- **金融支付**：`💳 金融支付` 默认 `DIRECT`，代理只提供手动地区策略，不使用测速组自动漂移出口 IP。
-- **云存储**：`☁️ 云存储` 默认可直连，也可手动切换到代理。
-- **游戏**：保留 `DIRECT`、游戏节点和地区节点选择，避免把所有游戏下载/联机流量强制塞进单一代理。
+52 个规则集不会生成 52 个策略组，而是按用途合并：
+
+| 规则类型 | Loon 策略组 |
+|---|---|
+| OpenAI / AI / Claude / Gemini / Copilot | `💬 Ai平台` |
+| Telegram | `📲 电报消息` |
+| YouTube | `📹 油管视频` |
+| Netflix | `🎥 奈飞视频` |
+| Disney / Spotify / TikTok / Twitch / Prime Video / HBO / Hulu | `🌍 国外媒体` |
+| Microsoft / OneDrive | `Ⓜ️ 微软服务` |
+| Apple | `🍎 苹果服务` |
+| Steam / Epic / PlayStation / Xbox / Nintendo / Blizzard / EA / Riot / Ubisoft | `🎮 游戏平台` |
+| 国内 App / China Direct / China IP / LAN | `🎯 全球直连` |
+| 广告规则 | `🛑 广告拦截` |
+| 其他社交 / 开发 / Google / Dropbox / 金融 / Global Proxy | `🚀 节点选择` |
+| 未匹配流量 | `🐟 漏网之鱼` |
+
+节点层保持与 4LESS 接近的结构：`🚀 节点选择`、`🚀 手动切换`、`♻️ 自动选择`，再配香港、台湾、新加坡、日本、美国、韩国六个地区测速组以及奈飞节点筛选。这样规则覆盖可以继续增长，但日常操作界面不会随着规则数量一起膨胀。
 
 ## 上游与构建方式
 
@@ -94,6 +109,7 @@ blackmatrix7 / fmz200 / Loyalsoldier / dnsmasq-china-list / anti-AD
 - **main / 定时任务**：构建通过后才更新 `release`。
 - **并发保护**：同类旧任务会被新任务淘汰，避免旧构建阻塞最新规则发布。
 - **骤降保护**：已有较大规则集若单次下降超过阈值，拒绝覆盖上一版。
+- **策略白名单**：Remote Rule 引用的策略必须存在于 4LESS 风格白名单和模板中，否则拒绝渲染。
 
 ## 手工纠错
 
