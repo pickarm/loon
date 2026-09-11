@@ -1,0 +1,42 @@
+name: Validate Loon Rules
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'sources/**'
+      - 'scripts/**'
+      - 'templates/**'
+      - 'override/**'
+      - 'tests/**'
+      - '.github/workflows/update.yml'
+      - '.github/workflows/validate.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: loon-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Load previous report
+        shell: bash
+        run: |
+          git fetch origin release:refs/remotes/origin/release || true
+          git show origin/release:build/report.json > .previous-report.json 2>/dev/null || true
+
+      - name: Build and validate
+        run: python scripts/build.py --refresh
