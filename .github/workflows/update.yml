@@ -25,7 +25,9 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Keep release publishing on a stable dedicated image instead of following
+    # ubuntu-latest runner-pool changes. PR validation still tracks latest.
+    runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
