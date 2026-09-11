@@ -92,6 +92,18 @@ def output_policy(item: dict) -> str:
     return policy
 
 
+def validate_template_policy_groups() -> None:
+    missing = []
+    for policy in sorted(ALLOWED_OUTPUT_POLICIES):
+        pattern = rf"(?m)^{re.escape(policy)}\s*="
+        if re.search(pattern, TEMPLATE) is None:
+            missing.append(policy)
+    if missing:
+        raise ValueError(
+            "Loon template is missing rendered policy groups: " + ", ".join(missing)
+        )
+
+
 def remote_rules(base: str) -> str:
     lines = []
     for item in CFG["rulesets"]:
@@ -125,6 +137,8 @@ def rewrite_github_raw(text: str, mode: str) -> str:
 
 
 def main() -> None:
+    validate_template_policy_groups()
+
     out_dir = ROOT / "config"
     out_dir.mkdir(parents=True, exist_ok=True)
 
