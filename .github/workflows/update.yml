@@ -61,6 +61,11 @@ jobs:
           本分支由 GitHub Actions 自动生成。源配置、构建器与上游定义请查看 `main` 分支。
           TXT
 
+          # prepare_catalog.py intentionally materializes extension catalogs into
+          # tracked base JSON files for the build. Restore those temporary edits
+          # before switching to the orphan release branch.
+          git restore -- sources/sources.json tests/expectations.json
+
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git switch --orphan _generated_release
