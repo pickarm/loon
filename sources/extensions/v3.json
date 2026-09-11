@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "rulesets": [
+    {
+      "name": "Download",
+      "path": "Download/Download.list",
+      "policy": "DIRECT",
+      "tag": "下载工具",
+      "min_rules": 5,
+      "sources": [
+        {"repo": "blackmatrix7", "paths": ["rule/Loon/Download/Download.list"]}
+      ]
+    },
+    {
+      "name": "PrivateTracker",
+      "path": "Download/PrivateTracker.list",
+      "policy": "DIRECT",
+      "tag": "PT / Tracker",
+      "min_rules": 100,
+      "sources": [
+        {"repo": "blackmatrix7", "paths": ["rule/Loon/PrivateTracker/PrivateTracker.list"]}
+      ]
+    },
+    {
+      "name": "GoogleFCM",
+      "path": "Vendor/GoogleFCM.list",
+      "policy": "🔍 Google",
+      "tag": "Google FCM",
+      "cn_guard": true,
+      "min_rules": 20,
+      "sources": [
+        {"repo": "blackmatrix7", "paths": ["rule/Loon/GoogleFCM/GoogleFCM.list"]}
+      ]
+    },
+    {
+      "name": "GoogleDrive",
+      "path": "Storage/GoogleDrive.list",
+      "policy": "🔍 Google",
+      "tag": "Google Drive",
+      "cn_guard": true,
+      "min_rules": 5,
+      "sources": [
+        {"repo": "blackmatrix7", "paths": ["rule/Loon/GoogleDrive/GoogleDrive.list"]}
+      ]
+    },
+    {
+      "name": "Bing",
+      "path": "Vendor/Bing.list",
+      "policy": "Ⓜ️ Microsoft",
+      "tag": "Bing",
+      "cn_guard": true,
+      "min_rules": 5,
+      "sources": [
+        {"repo": "blackmatrix7", "paths": ["rule/Loon/Bing/Bing.list"]}
+      ]
+    },
+    {
+      "name": "SteamCN",
+      "path": "Game/SteamCN.list",
+      "policy": "DIRECT",
+      "tag": "Steam 中国",
+      "cn_protect": true,
+      "min_rules": 10,
+      "sources": [
+        {"repo": "blackmatrix7", "paths": ["rule/Loon/SteamCN/SteamCN.list"]}
+      ]
+    },
+    {
+      "name": "Speedtest",
+      "path": "Utility/Speedtest.list",
+      "policy": "🌍 国外网站",
+      "tag": "测速",
+      "cn_guard": true,
+      "min_rules": 4,
+      "sources": [
+        {"repo": "blackmatrix7", "paths": ["rule/Loon/Speedtest/Speedtest.list"]}
+      ]
+    },
+    {
+      "name": "Bahamut",
+      "path": "Streaming/Bahamut.list",
+      "policy": "🎬 流媒体",
+      "tag": "巴哈姆特",
+      "cn_guard": true,
+      "min_rules": 5,
+      "sources": [
+        {"repo": "blackmatrix7", "paths": ["rule/Loon/Bahamut/Bahamut.list"]}
+      ]
+    },
+    {
+      "name": "BiliBili",
+      "path": "ChinaApp/BiliBili.list",
+      "policy": "DIRECT",
+      "tag": "哔哩哔哩",
+      "cn_protect": true,
+      "min_rules": 50,
+      "sources": [
+        {"repo": "blackmatrix7", "paths": ["rule/Loon/BiliBili/BiliBili.list"]}
+      ]
+    },
+    {
+      "name": "Emby",
+      "path": "Streaming/Emby.list",
+      "policy": "🎬 流媒体",
+      "tag": "Emby",
+      "cn_guard": true,
+      "min_rules": 20,
+      "sources": [
+        {"repo": "blackmatrix7", "paths": ["rule/Loon/Emby/Emby.list"]}
+      ]
+    }
+  ]
+}

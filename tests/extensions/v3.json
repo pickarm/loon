@@ -1,0 +1,14 @@
+{
+  "service": {
+    "Download/Download.list": ["qbittorrent.org"],
+    "Download/PrivateTracker.list": ["m-team.cc"],
+    "Vendor/GoogleFCM.list": ["mtalk.google.com"],
+    "Storage/GoogleDrive.list": ["drive.google.com"],
+    "Vendor/Bing.list": ["bing.com"],
+    "Game/SteamCN.list": ["steamchina.com"],
+    "Utility/Speedtest.list": ["fast.com"],
+    "Streaming/Bahamut.list": ["bahamut.com.tw"],
+    "ChinaApp/BiliBili.list": ["bilibili.com"],
+    "Streaming/Emby.list": ["emby.wtf"]
+  }
+}
