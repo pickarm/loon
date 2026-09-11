@@ -2,7 +2,7 @@
 
 面向中国大陆网络环境的 **Loon 配置 + 多源聚合规则库**。目标不是简单搬运某一个规则仓库，而是把多个高质量上游统一解析、去重、校验，并通过 CN Guard 尽量避免国内域名误走代理。
 
-当前已拆分为 **52 个细粒度规则集**；规则可以继续细分，但生成到 Loon 的用户可见策略组刻意保持精简，并与现有 4LESS / ACL4SSR 使用习惯保持一致。实际规则总量、各分类条目数、上游 commit 与 CN Guard 移除数量以 `release/build/report.json` 为准。
+当前 V3 已拆分为 **62 个细粒度规则集**；规则可以继续细分，但生成到 Loon 的用户可见策略组刻意保持精简，并与现有 4LESS / ACL4SSR 使用习惯保持一致。实际规则总量、各分类条目数、上游 commit 与 CN Guard 移除数量以 `release/build/report.json` 为准。
 
 ## 🚀 直接使用
 
@@ -22,14 +22,15 @@ GitHub Actions 会把可使用的配置与规则发布到 `release` 分支。
 
 ## 设计原则
 
-1. **规则细、策略少**：规则文件按 AI、社交、流媒体、开发、云存储、厂商、金融、游戏、国内应用等继续细分；Loon 策略组统一折叠到少量 4LESS 风格业务组，避免“一个规则集一个策略组”。
+1. **规则细、策略少**：规则文件持续细分，Loon 策略统一折叠到少量 4LESS 风格业务组，避免“一个规则集一个策略组”。
 2. **多源聚合**：优先使用 `blackmatrix7/ios_rule_script`、`fmz200/wool_scripts`、`Loyalsoldier/surge-rules`、`felixonmars/dnsmasq-china-list`、`privacy-protection-tools/anti-AD`。
 3. **CN Guard**：代理规则生成前使用国内直连集合做域名冲突过滤；国内域名保护优先于“规则数量看起来很多”。
 4. **自动更新**：每天北京时间 02:23 自动拉取上游最新内容并生成 `release` 分支。
 5. **失败保护**：关键规则低于最低数量、关键测试域名缺失、规则数量异常骤降时，Actions 直接失败，不覆盖上一版可用规则。
 6. **策略组防膨胀**：渲染器维护 4LESS 策略白名单；新增源策略若没有明确映射到现有组，构建直接失败。
-7. **可追溯**：记录上游 HEAD SHA、实际使用文件的 SHA256、每个规则集条目数和 CN Guard 移除数量。
-8. **插件不重复造轮子**：插件部分沿用可莉等成熟 Loon 插件生态，本项目重点维护规则、策略与自动化。
+7. **可扩展目录**：基础目录在 `sources/sources.json`，增量版本放在 `sources/extensions/*.json`；构建前自动合并，并把细规则插在 China/Global 宽泛规则之前。
+8. **可追溯**：记录上游 HEAD SHA、实际使用文件的 SHA256、每个规则集条目数和 CN Guard 移除数量。
+9. **插件不重复造轮子**：插件部分沿用可莉等成熟 Loon 插件生态，本项目重点维护规则、策略与自动化。
 
 ## 当前规则分类
 
@@ -37,13 +38,15 @@ GitHub Actions 会把可使用的配置与规则发布到 `release` 分支。
 rules/
 ├── AI/               # OpenAI / AI / Claude / Gemini / Copilot
 ├── Social/           # Telegram / Discord / Twitter / Facebook / Instagram / Reddit / WhatsApp
-├── Streaming/        # YouTube / Netflix / Disney / Spotify / TikTok / Twitch / Prime Video / HBO / Hulu
+├── Streaming/        # YouTube / Netflix / Disney / Spotify / TikTok / Twitch / Prime Video / HBO / Hulu / Bahamut / Emby
 ├── Developer/        # GitHub / GitLab / Docker / Cloudflare
-├── Storage/          # OneDrive / Dropbox
-├── Vendor/           # Google / Microsoft / Apple
+├── Storage/          # OneDrive / Dropbox / Google Drive
+├── Vendor/           # Google / Google FCM / Microsoft / Bing / Apple
 ├── Finance/          # PayPal / Binance / OKX
-├── Game/             # Steam / Epic / PlayStation / Xbox / Nintendo / Blizzard / EA / Riot / Ubisoft
-├── ChinaApp/         # 抖音 / 小红书 / 快手 / 王者荣耀 / Soul
+├── Game/             # Steam / SteamCN / Epic / PlayStation / Xbox / Nintendo / Blizzard / EA / Riot / Ubisoft
+├── Download/         # Download / PrivateTracker
+├── Utility/          # Speedtest
+├── ChinaApp/         # 抖音 / 小红书 / 快手 / 王者荣耀 / Soul / BiliBili
 ├── China/            # Direct / ChinaIP
 ├── Proxy/            # Global
 ├── Ads/              # Reject
@@ -52,7 +55,7 @@ rules/
 
 ## 4LESS 风格策略组
 
-52 个规则集不会生成 52 个策略组，而是按用途合并：
+62 个规则集不会生成 62 个策略组，而是按用途合并：
 
 | 规则类型 | Loon 策略组 |
 |---|---|
@@ -60,52 +63,50 @@ rules/
 | Telegram | `📲 电报消息` |
 | YouTube | `📹 油管视频` |
 | Netflix | `🎥 奈飞视频` |
-| Disney / Spotify / TikTok / Twitch / Prime Video / HBO / Hulu | `🌍 国外媒体` |
-| Microsoft / OneDrive | `Ⓜ️ 微软服务` |
+| Disney / Spotify / TikTok / Twitch / Prime Video / HBO / Hulu / Bahamut / Emby | `🌍 国外媒体` |
+| Microsoft / Bing / OneDrive | `Ⓜ️ 微软服务` |
 | Apple | `🍎 苹果服务` |
 | Steam / Epic / PlayStation / Xbox / Nintendo / Blizzard / EA / Riot / Ubisoft | `🎮 游戏平台` |
-| 国内 App / China Direct / China IP / LAN | `🎯 全球直连` |
+| Download / PT / SteamCN / BiliBili / 国内 App / China / LAN | `🎯 全球直连` |
 | 广告规则 | `🛑 广告拦截` |
-| 其他社交 / 开发 / Google / Dropbox / 金融 / Global Proxy | `🚀 节点选择` |
+| 其他社交 / 开发 / Google / FCM / Google Drive / Dropbox / 金融 / Speedtest / Global Proxy | `🚀 节点选择` |
 | 未匹配流量 | `🐟 漏网之鱼` |
 
 节点层保持与 4LESS 接近的结构：`🚀 节点选择`、`🚀 手动切换`、`♻️ 自动选择`，再配香港、台湾、新加坡、日本、美国、韩国六个地区测速组以及奈飞节点筛选。这样规则覆盖可以继续增长，但日常操作界面不会随着规则数量一起膨胀。
 
 ## 上游与构建方式
 
-`sources/sources.json` 是唯一规则源清单。构建器不会再 clone 体积巨大的完整规则仓库，而是只下载当前规则集真正使用到的 Raw 文件，并通过 `git ls-remote` 记录对应上游 HEAD：
+基础规则源定义在 `sources/sources.json`，版本增量放在 `sources/extensions/*.json`；对应语义测试可以放 `tests/extensions/*.json`。`scripts/prepare_catalog.py` 在构建前完成去重与合并，并保证新增细规则位于 China/Global 宽泛规则之前。
+
+构建器只下载当前规则集真正使用到的 Raw 文件，并通过 `git ls-remote` 记录对应上游 HEAD：
 
 ```text
+sources.json + sources/extensions/*.json
+                    ↓
+           prepare_catalog.py
+                    ↓
 blackmatrix7 / fmz200 / Loyalsoldier / dnsmasq-china-list / anti-AD
-                              ↓
-             并发按需下载 Raw + 记录 upstream HEAD
-                              ↓
-               统一解析 Loon / Surge / dnsmasq
-                              ↓
-                    规范化 + 去重
-                              ↓
-              国内保护集合 + CN Guard
-                              ↓
-                   手工 override
-                              ↓
-      关键域名语义测试 + 数量阈值 + 骤降检测
-                              ↓
-          release/rules + 三套 Loon 配置 + report
+                    ↓
+       并发按需下载 Raw + 记录 upstream HEAD
+                    ↓
+         统一解析 Loon / Surge / dnsmasq
+                    ↓
+              规范化 + 去重
+                    ↓
+        国内保护集合 + CN Guard
+                    ↓
+             手工 override
+                    ↓
+语义测试 + 数量阈值 + 骤降检测 + 4LESS 策略白名单
+                    ↓
+    release/rules + 三套 Loon 配置 + report
 ```
 
-下载使用有限超时和并发预取；某个大仓库不会因为自身 Git 历史体积拖慢整个日更流程。
-
-每次构建会在 `build/report.json` 保存：
-
-- 上游 HEAD commit SHA
-- 实际使用源文件的 SHA256
-- 每个规则集最终条目数
-- 每个规则集被 CN Guard 移除的条目数
-- 全部规则总量
+每次构建会在 `build/report.json` 保存上游 HEAD commit SHA、实际使用源文件 SHA256、每个规则集最终条目数、CN Guard 移除数量和全部规则总量。
 
 ## 自动化
 
-- **Pull Request**：只运行 Validate，真实拉取上游、构建全部规则并执行校验，不发布。
+- **Pull Request**：只运行 Validate，真实拉取上游、合并扩展目录、构建全部规则并执行校验，不发布。
 - **main / 定时任务**：构建通过后才更新 `release`。
 - **并发保护**：同类旧任务会被新任务淘汰，避免旧构建阻塞最新规则发布。
 - **骤降保护**：已有较大规则集若单次下降超过阈值，拒绝覆盖上一版。
@@ -129,10 +130,17 @@ IP-CIDR,1.2.3.0/24,no-resolve
 
 ## 本地构建
 
-需要 Python 3.10+ 和 Git：
+需要 Python 3.10+ 和 Git。在干净工作树中运行：
 
 ```bash
+python scripts/prepare_catalog.py
 python scripts/build.py --refresh
+```
+
+`prepare_catalog.py` 会在本地工作树临时把扩展目录合并进基础 JSON；构建完成后如需恢复仓库文件，可执行：
+
+```bash
+git restore -- sources/sources.json tests/expectations.json
 ```
 
 生成内容位于 `rules/`、`config/`、`build/report.json`。这些目录由 Actions 发布到 `release`，不提交到 `main`。
