@@ -2,15 +2,6 @@ name: Build Loon Rules
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'sources/**'
-      - 'scripts/**'
-      - 'templates/**'
-      - 'override/**'
-      - 'tests/**'
-      - '.github/workflows/update.yml'
   push:
     branches: [main]
     paths:
@@ -20,6 +11,7 @@ on:
       - 'override/**'
       - 'tests/**'
       - '.github/workflows/update.yml'
+      - '.github/workflows/validate.yml'
   schedule:
     # Beijing 02:23 every day (UTC 18:23)
     - cron: '23 18 * * *'
@@ -28,13 +20,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: loon-rule-build-${{ github.ref }}
+  group: loon-release-build
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -54,7 +46,6 @@ jobs:
         run: python scripts/build.py --refresh
 
       - name: Prepare release branch
-        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
