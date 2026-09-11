@@ -1,0 +1,68 @@
+name: Build Loon Rules
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'sources/**'
+      - 'scripts/**'
+      - 'templates/**'
+      - 'override/**'
+      - 'tests/**'
+      - '.github/workflows/update.yml'
+  schedule:
+    # Beijing 02:23 every day (UTC 18:23)
+    - cron: '23 18 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loon-rule-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Load previous report
+        shell: bash
+        run: |
+          git fetch origin release:refs/remotes/origin/release || true
+          git show origin/release:build/report.json > .previous-report.json 2>/dev/null || true
+
+      - name: Build and validate
+        run: python scripts/build.py --refresh
+
+      - name: Prepare release branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/loon-release
+          mkdir -p /tmp/loon-release
+          cp -a rules config build /tmp/loon-release/
+          cat > /tmp/loon-release/README.md <<'TXT'
+          # pickarm/loon generated release
+
+          本分支由 GitHub Actions 自动生成。源配置、构建器与上游定义请查看 `main` 分支。
+          TXT
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch --orphan _generated_release
+          git rm -rf . >/dev/null 2>&1 || true
+          git clean -fdx >/dev/null 2>&1 || true
+          cp -a /tmp/loon-release/. .
+          git add README.md rules config build
+          git commit -m "chore: update generated rules $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          git push --force origin HEAD:release
