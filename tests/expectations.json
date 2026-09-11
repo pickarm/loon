@@ -1,0 +1,10 @@
+{
+  "direct": ["baidu.com", "qq.com", "weixin.qq.com", "bilibili.com", "jd.com", "taobao.com"],
+  "service": {
+    "AI/OpenAI.list": ["chatgpt.com", "openai.com"],
+    "Social/Telegram.list": ["telegram.org"],
+    "Developer/GitHub.list": ["github.com"],
+    "Streaming/Netflix.list": ["netflix.com"],
+    "Streaming/YouTube.list": ["youtube.com"]
+  }
+}
