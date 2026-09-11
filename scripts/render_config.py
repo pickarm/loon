@@ -24,52 +24,58 @@ FLAVORS = {
     },
 }
 
-# Rules stay fine-grained, but their rendered Loon policies intentionally stay
-# close to the user's 4LESS/ACL4SSR layout. New source-level policy names must
-# be explicitly folded into this small set or CI/rendering will fail closed.
+# Fine-grained rules are folded into a small Kelee-style service layer. There is
+# deliberately no generic "node selection" group: every visible service group
+# directly exposes the regional manual/latency groups from the template.
 POLICY_ALIASES = {
-    "DIRECT": "🎯 全球直连",
-    "REJECT": "🛑 广告拦截",
-    "🤖 OpenAI": "💬 Ai平台",
-    "🤖 AI": "💬 Ai平台",
-    "🤖 Claude": "💬 Ai平台",
-    "🤖 Gemini": "💬 Ai平台",
-    "🤖 Copilot": "💬 Ai平台",
+    "DIRECT": "DIRECT",
+    "🤖 OpenAI": "🤖 AI平台",
+    "🤖 AI": "🤖 AI平台",
+    "🤖 Claude": "🤖 AI平台",
+    "🤖 Gemini": "🤖 AI平台",
+    "🤖 Copilot": "🤖 AI平台",
     "💬 Telegram": "📲 电报消息",
-    "💬 社交通讯": "🚀 节点选择",
+    "💬 社交通讯": "🌐 国外网站",
     "📺 YouTube": "📹 油管视频",
     "🎬 Netflix": "🎥 奈飞视频",
     "🎬 流媒体": "🌍 国外媒体",
     "🎵 Spotify": "🌍 国外媒体",
     "🎵 TikTok": "🌍 国外媒体",
-    "🧑‍💻 GitHub": "🚀 节点选择",
-    "🧑‍💻 开发服务": "🚀 节点选择",
-    "☁️ 云存储": "🚀 节点选择",
-    "🔍 Google": "🚀 节点选择",
+    "🧑‍💻 GitHub": "🌐 国外网站",
+    "🧑‍💻 开发服务": "🌐 国外网站",
+    "☁️ 云存储": "🌐 国外网站",
+    "🔍 Google": "🌐 国外网站",
     "Ⓜ️ Microsoft": "Ⓜ️ 微软服务",
     "🍎 Apple": "🍎 苹果服务",
-    "💳 金融支付": "🚀 节点选择",
+    "💳 金融支付": "🌐 国外网站",
     "🎮 游戏平台": "🎮 游戏平台",
-    "🌍 国外网站": "🚀 节点选择",
+    "🌍 国外网站": "🌐 国外网站",
 }
 
 RULESET_POLICY_OVERRIDES = {
-    # 4LESS treats OneDrive as Microsoft traffic rather than a generic cloud group.
     "OneDrive": "Ⓜ️ 微软服务",
 }
 
-ALLOWED_OUTPUT_POLICIES = {
-    "🚀 节点选择",
+BUILTIN_POLICIES = {"DIRECT", "REJECT"}
+VISIBLE_SERVICE_POLICIES = {
+    "🤖 AI平台",
     "📲 电报消息",
-    "💬 Ai平台",
     "📹 油管视频",
     "🎥 奈飞视频",
     "🌍 国外媒体",
     "Ⓜ️ 微软服务",
     "🍎 苹果服务",
     "🎮 游戏平台",
+    "🌐 国外网站",
+}
+ALLOWED_OUTPUT_POLICIES = BUILTIN_POLICIES | VISIBLE_SERVICE_POLICIES
+FORBIDDEN_LEGACY_GROUPS = {
+    "🚀 节点选择",
+    "🚀 手动切换",
+    "♻️ 自动选择",
     "🎯 全球直连",
     "🛑 广告拦截",
+    "🐟 漏网之鱼",
 }
 
 RAW_GITHUB = re.compile(
@@ -82,9 +88,13 @@ def output_policy(item: dict) -> str:
     policy = RULESET_POLICY_OVERRIDES.get(item["name"])
     if policy is None:
         source_policy = item["policy"]
+        if source_policy == "REJECT":
+            raise ValueError(
+                f"ruleset {item['name']}: ad/reject rules are disabled for this configuration"
+            )
         if source_policy not in POLICY_ALIASES:
             raise ValueError(
-                f"ruleset {item['name']}: source policy {source_policy!r} has no 4LESS mapping"
+                f"ruleset {item['name']}: source policy {source_policy!r} has no service mapping"
             )
         policy = POLICY_ALIASES[source_policy]
     if policy not in ALLOWED_OUTPUT_POLICIES:
@@ -94,14 +104,30 @@ def output_policy(item: dict) -> str:
 
 def validate_template_policy_groups() -> None:
     missing = []
-    for policy in sorted(ALLOWED_OUTPUT_POLICIES):
+    for policy in sorted(VISIBLE_SERVICE_POLICIES):
         pattern = rf"(?m)^{re.escape(policy)}\s*="
         if re.search(pattern, TEMPLATE) is None:
             missing.append(policy)
     if missing:
         raise ValueError(
-            "Loon template is missing rendered policy groups: " + ", ".join(missing)
+            "Loon template is missing service policy groups: " + ", ".join(missing)
         )
+
+    present_forbidden = []
+    for policy in sorted(FORBIDDEN_LEGACY_GROUPS):
+        pattern = rf"(?m)^{re.escape(policy)}\s*="
+        if re.search(pattern, TEMPLATE) is not None:
+            present_forbidden.append(policy)
+    if present_forbidden:
+        raise ValueError(
+            "Loon template still contains deprecated intermediary groups: "
+            + ", ".join(present_forbidden)
+        )
+
+    if re.search(r"(?m)^兜底后备策略\s*=", TEMPLATE) is None:
+        raise ValueError("Loon template is missing 兜底后备策略")
+    if "FINAL,兜底后备策略" not in TEMPLATE:
+        raise ValueError("Loon FINAL must point directly to 兜底后备策略")
 
 
 def remote_rules(base: str) -> str:
