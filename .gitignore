@@ -1,0 +1,7 @@
+.cache/
+.previous-report.json
+rules/
+config/
+build/
+__pycache__/
+*.pyc

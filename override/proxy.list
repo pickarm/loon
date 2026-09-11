@@ -1,0 +1,2 @@
+# 手工强制代理。此文件在 CN Guard 完成后追加到 Proxy/Global.list。
+# DOMAIN-SUFFIX,example.com
