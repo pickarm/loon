@@ -276,7 +276,8 @@ def main() -> int:
         print(f"[parse] {item['path']}: {len(rules)} rules", flush=True)
 
     raw_built.setdefault("China/Direct.list", set()).update(read_override("direct.list"))
-    raw_built.setdefault("Ads/Reject.list", set()).update(read_override("reject.list"))
+    if "Ads/Reject.list" in raw_built:
+        raw_built["Ads/Reject.list"].update(read_override("reject.list"))
     protected_sets = {p: r for p, r in raw_built.items() if items_by_path.get(p, {}).get("cn_protect")}
     direct_exact, direct_suffix = build_protection(protected_sets)
 
