@@ -42,6 +42,9 @@ jobs:
           git fetch origin release:refs/remotes/origin/release || true
           git show origin/release:build/report.json > .previous-report.json 2>/dev/null || true
 
+      - name: Prepare ruleset catalog
+        run: python scripts/prepare_catalog.py
+
       - name: Build and validate
         run: python scripts/build.py --refresh
 
