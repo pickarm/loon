@@ -208,12 +208,13 @@ def build_protection(rulesets):
 
 
 def protected_domain(typ, value, exact, suffixes):
-    value = value.lower()
-    if typ == "DOMAIN":
-        return value in exact or any(value == s or value.endswith("." + s) for s in suffixes)
-    if typ == "DOMAIN-SUFFIX":
-        return any(value == s or value.endswith("." + s) for s in suffixes)
-    return False
+    value = value.lower().strip(".")
+    if typ not in DOMAIN_TYPES or not value:
+        return False
+    if typ == "DOMAIN" and value in exact:
+        return True
+    labels = value.split(".")
+    return any(".".join(labels[i:]) in suffixes for i in range(len(labels)))
 
 
 def domain_matches(rules, domain):
