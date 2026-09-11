@@ -10,14 +10,28 @@ SOURCE_EXTENSIONS = ROOT / "sources" / "extensions"
 EXPECTATIONS = ROOT / "tests" / "expectations.json"
 TEST_EXTENSIONS = ROOT / "tests" / "extensions"
 
+# This project intentionally does not generate a dedicated ad-blocking ruleset.
+# Kelee-style plugin entries can still be enabled/disabled independently in Loon.
+EXCLUDED_RULESET_PREFIXES = ("Ads/",)
+EXCLUDED_POLICIES = {"REJECT"}
+
 
 def read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def keep_ruleset(item: dict) -> bool:
+    return (
+        item.get("policy") not in EXCLUDED_POLICIES
+        and not str(item.get("path", "")).startswith(EXCLUDED_RULESET_PREFIXES)
+    )
+
+
 def merge_rulesets() -> None:
     cfg = read_json(SOURCES)
-    base = list(cfg.get("rulesets", []))
+    original = list(cfg.get("rulesets", []))
+    base = [item for item in original if keep_ruleset(item)]
+    excluded = len(original) - len(base)
     seen_names = {item["name"] for item in base}
     seen_paths = {item["path"] for item in base}
     extras: list[dict] = []
@@ -26,6 +40,9 @@ def merge_rulesets() -> None:
         for path in sorted(SOURCE_EXTENSIONS.glob("*.json")):
             data = read_json(path)
             for item in data.get("rulesets", []):
+                if not keep_ruleset(item):
+                    excluded += 1
+                    continue
                 if item["name"] in seen_names:
                     raise ValueError(f"duplicate ruleset name in {path}: {item['name']}")
                 if item["path"] in seen_paths:
@@ -40,8 +57,22 @@ def merge_rulesets() -> None:
         len(base),
     )
     cfg["rulesets"] = base[:insert_at] + extras + base[insert_at:]
+
+    # Drop upstream definitions that are no longer referenced (for example anti-AD).
+    used_repos = {
+        src["repo"]
+        for item in cfg["rulesets"]
+        for src in item.get("sources", [])
+    }
+    cfg["upstreams"] = {
+        key: value for key, value in cfg.get("upstreams", {}).items() if key in used_repos
+    }
+
     SOURCES.write_text(json.dumps(cfg, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
-    print(f"[catalog] merged {len(extras)} extension rulesets; total={len(cfg['rulesets'])}")
+    print(
+        f"[catalog] merged {len(extras)} extension rulesets; "
+        f"excluded={excluded}; total={len(cfg['rulesets'])}"
+    )
 
 
 def merge_expectations() -> None:
