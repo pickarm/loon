@@ -8,6 +8,9 @@ ipv6-vif = off
 dns-server = system
 sni-sniffing = true
 disable-stun = true
+# Most subscription nodes used with this profile only relay UDP. Disable UDP/443
+# so HTTP/3/QUIC falls back to TCP, which is typically more stable for ChatGPT.
+disable-udp-ports = 443
 dns-reject-mode = LoopbackIP
 domain-reject-mode = DNS
 udp-fallback-mode = REJECT
@@ -27,6 +30,7 @@ bypass-tun = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,1
 
 [Remote Proxy]
 # 在 Loon 中添加你自己的订阅；公共模板不会保存私人订阅 URL。
+# 对 UDP 仅做转发/中继的节点，建议保持 block-quic=true。
 # 示例（不要直接使用）：sub = https://example.com/your-subscription,udp=true,block-quic=true,skip-cert-verify=false,enabled=true
 
 [Remote Filter]

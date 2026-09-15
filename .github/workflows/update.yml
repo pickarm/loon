@@ -48,6 +48,9 @@ jobs:
       - name: Build and validate
         run: python scripts/build.py --refresh
 
+      - name: Apply ChatGPT iOS stability overrides
+        run: python scripts/postprocess_ai.py
+
       - name: Prepare release branch
         shell: bash
         run: |
