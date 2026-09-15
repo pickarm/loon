@@ -7,6 +7,7 @@ on:
     paths:
       - 'sources/**'
       - 'scripts/**'
+      - 'runtime/**'
       - 'templates/**'
       - 'override/**'
       - 'tests/**'
@@ -44,6 +45,11 @@ jobs:
           git fetch origin release:refs/remotes/origin/release || true
           git show origin/release:build/report.json > .previous-report.json 2>/dev/null || true
 
+      - name: Validate runtime scripts
+        run: |
+          node --check runtime/region_guard.js
+          node tests/region_guard.test.js
+
       - name: Prepare ruleset catalog
         run: python scripts/prepare_catalog.py
 
@@ -56,7 +62,7 @@ jobs:
           set -euo pipefail
           rm -rf /tmp/loon-release
           mkdir -p /tmp/loon-release
-          cp -a rules config build /tmp/loon-release/
+          cp -a rules config build runtime /tmp/loon-release/
           cat > /tmp/loon-release/README.md <<'TXT'
           # pickarm/loon generated release
 
@@ -74,6 +80,6 @@ jobs:
           git rm -rf . >/dev/null 2>&1 || true
           git clean -fdx >/dev/null 2>&1 || true
           cp -a /tmp/loon-release/. .
-          git add README.md rules config build
+          git add README.md rules config build runtime
           git commit -m "chore: update generated rules $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           git push --force origin HEAD:release
