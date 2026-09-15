@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+RULE_DIR = ROOT / "rules"
 CFG = json.loads((ROOT / "sources" / "sources.json").read_text(encoding="utf-8"))
 TEMPLATE = (ROOT / "templates" / "Loon.conf.tpl").read_text(encoding="utf-8")
 
@@ -24,9 +25,9 @@ FLAVORS = {
     },
 }
 
-# Rules remain fine-grained, but visible policies are intentionally compact.
-# Ordinary overseas traffic is sent straight to the single fallback policy;
-# only services that benefit from a persistent user-selected exit stay visible.
+# Fine-grained files stay in rules/* for maintenance and debugging. Loon only
+# subscribes to the compact bundles below, so its Rules page stays close to the
+# visible policy layout instead of showing 60+ individual rule subscriptions.
 POLICY_ALIASES = {
     "DIRECT": "DIRECT",
     "🤖 OpenAI": "🤖 AI平台",
@@ -56,7 +57,6 @@ RULESET_POLICY_OVERRIDES = {
     "OneDrive": "Ⓜ️ 微软服务",
 }
 
-BUILTIN_POLICIES = {"DIRECT", "REJECT"}
 VISIBLE_SERVICE_POLICIES = {
     "🤖 AI平台",
     "📲 电报消息",
@@ -69,7 +69,7 @@ VISIBLE_SERVICE_POLICIES = {
     "💳 金融平台",
 }
 SPECIAL_POLICIES = {"兜底后备策略"}
-ALLOWED_OUTPUT_POLICIES = BUILTIN_POLICIES | VISIBLE_SERVICE_POLICIES | SPECIAL_POLICIES
+ALLOWED_OUTPUT_POLICIES = {"DIRECT"} | VISIBLE_SERVICE_POLICIES | SPECIAL_POLICIES
 FORBIDDEN_LEGACY_GROUPS = {
     "🚀 节点选择",
     "🚀 手动切换",
@@ -79,6 +79,21 @@ FORBIDDEN_LEGACY_GROUPS = {
     "🐟 漏网之鱼",
     "🌐 国外网站",
 }
+
+# Order here is also the order shown on Loon's Rules page.
+BUNDLE_SPECS = [
+    {"policy": "DIRECT", "path": "Bundles/Direct.list", "tag": "🎯 全球直连"},
+    {"policy": "🤖 AI平台", "path": "Bundles/AI.list", "tag": "🤖 AI平台"},
+    {"policy": "📲 电报消息", "path": "Bundles/Telegram.list", "tag": "📲 电报消息"},
+    {"policy": "📹 油管视频", "path": "Bundles/YouTube.list", "tag": "📹 油管视频"},
+    {"policy": "🎥 奈飞视频", "path": "Bundles/Netflix.list", "tag": "🎥 奈飞视频"},
+    {"policy": "🌍 国外媒体", "path": "Bundles/Streaming.list", "tag": "🌍 国外媒体"},
+    {"policy": "Ⓜ️ 微软服务", "path": "Bundles/Microsoft.list", "tag": "Ⓜ️ 微软服务"},
+    {"policy": "🍎 苹果服务", "path": "Bundles/Apple.list", "tag": "🍎 苹果服务"},
+    {"policy": "🎮 游戏平台", "path": "Bundles/Game.list", "tag": "🎮 游戏平台"},
+    {"policy": "💳 金融平台", "path": "Bundles/Finance.list", "tag": "💳 金融平台"},
+    {"policy": "兜底后备策略", "path": "Bundles/Fallback.list", "tag": "🐟 漏网之鱼"},
+]
 
 RAW_GITHUB = re.compile(
     r"https://raw\.githubusercontent\.com/"
@@ -124,15 +139,11 @@ def validate_template_policy_groups() -> None:
         )
 
     fallback = group_line("兜底后备策略")
-    if fallback is None:
-        raise ValueError("Loon template is missing 兜底后备策略")
-    if not fallback.startswith("fallback,"):
+    if fallback is None or not fallback.startswith("fallback,"):
         raise ValueError("兜底后备策略 must remain a fallback group")
     if "节点" not in fallback:
         raise ValueError("兜底后备策略 must consume Remote Filter node sets directly")
 
-    # Business groups must expose Remote Filter node sets directly. This blocks
-    # the old second-level region groups from returning in future edits.
     for policy in sorted(VISIBLE_SERVICE_POLICIES):
         line = group_line(policy) or ""
         if not line.startswith("select,"):
@@ -142,24 +153,62 @@ def validate_template_policy_groups() -> None:
         if "手动策略" in line or "时延优选" in line:
             raise ValueError(f"{policy} still references nested regional policy groups")
 
-    # No old regional groups should remain as visible cards.
     if re.search(r"(?m)^(?:香港|台湾|日本|韩国|新加坡|美国).*(?:手动策略|时延优选)\s*=", TEMPLATE):
         raise ValueError("template still defines nested regional manual/latency groups")
-
     if "FINAL,兜底后备策略" not in TEMPLATE:
         raise ValueError("Loon FINAL must point directly to 兜底后备策略")
 
 
-def remote_rules(base: str) -> str:
-    lines = []
+def file_rules(path: Path) -> set[str]:
+    rules: set[str] = set()
+    for line in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        line = line.strip()
+        if line and not line.startswith(("#", "//", ";")):
+            rules.add(line)
+    return rules
+
+
+def build_bundles() -> list[dict]:
+    grouped: dict[str, set[str]] = {spec["policy"]: set() for spec in BUNDLE_SPECS}
+    sources: dict[str, list[str]] = {spec["policy"]: [] for spec in BUNDLE_SPECS}
+
     for item in CFG["rulesets"]:
-        if not (ROOT / "rules" / item["path"]).exists():
+        src = RULE_DIR / item["path"]
+        if not src.exists():
             continue
         policy = output_policy(item)
-        lines.append(
-            f"{base}/{item['path']}, policy={policy}, "
-            f"tag={item['tag']}, enabled=true"
-        )
+        grouped.setdefault(policy, set()).update(file_rules(src))
+        sources.setdefault(policy, []).append(item["path"])
+
+    built_specs: list[dict] = []
+    for spec in BUNDLE_SPECS:
+        policy = spec["policy"]
+        rules = grouped.get(policy, set())
+        if not rules:
+            raise ValueError(f"bundle {spec['path']} for {policy} is empty")
+        out = RULE_DIR / spec["path"]
+        out.parent.mkdir(parents=True, exist_ok=True)
+        header = [
+            "# Generated by pickarm/loon from fine-grained rules. DO NOT EDIT.",
+            f"# TAG: {spec['tag']}",
+            f"# POLICY: {policy}",
+            f"# RULES: {len(rules)}",
+        ]
+        header += [f"# SOURCE-RULESET: {p}" for p in sources.get(policy, [])]
+        body = "\n".join(sorted(rules, key=lambda x: (x.split(",", 1)[0], x.lower())))
+        out.write_text("\n".join(header) + "\n" + body + "\n", encoding="utf-8")
+        built_specs.append({**spec, "count": len(rules)})
+
+    return built_specs
+
+
+def remote_rules(base: str, bundles: list[dict]) -> str:
+    lines = [
+        f"{base}/{spec['path']}, policy={spec['policy']}, tag={spec['tag']}, enabled=true"
+        for spec in bundles
+    ]
+    if len(lines) != len(BUNDLE_SPECS):
+        raise ValueError(f"expected {len(BUNDLE_SPECS)} remote bundles, got {len(lines)}")
     return "\n".join(lines)
 
 
@@ -172,11 +221,10 @@ def rewrite_github_raw(text: str, mode: str) -> str:
         if mode == "proxy":
             return f"https://githubproxy.cc/{raw}"
         if mode == "jsdelivr":
-            owner = match.group("owner")
-            repo = match.group("repo")
-            ref = match.group("ref")
-            path = match.group("path")
-            return f"https://cdn.jsdelivr.net/gh/{owner}/{repo}@{ref}/{path}"
+            return (
+                f"https://cdn.jsdelivr.net/gh/{match.group('owner')}/{match.group('repo')}"
+                f"@{match.group('ref')}/{match.group('path')}"
+            )
         raise ValueError(f"unknown github rewrite mode: {mode}")
 
     return RAW_GITHUB.sub(repl, text)
@@ -184,12 +232,19 @@ def rewrite_github_raw(text: str, mode: str) -> str:
 
 def main() -> None:
     validate_template_policy_groups()
+    bundles = build_bundles()
+    print(
+        "[bundle] "
+        + ", ".join(f"{spec['tag']}={spec['count']}" for spec in bundles),
+        flush=True,
+    )
 
     out_dir = ROOT / "config"
     out_dir.mkdir(parents=True, exist_ok=True)
-
     for filename, flavor in FLAVORS.items():
-        text = TEMPLATE.replace("{{REMOTE_RULES}}", remote_rules(flavor["rules_base"]))
+        text = TEMPLATE.replace(
+            "{{REMOTE_RULES}}", remote_rules(flavor["rules_base"], bundles)
+        )
         text = text.replace("{{CONFIG_VARIANT}}", filename)
         text = rewrite_github_raw(text, flavor["github_mode"])
         (out_dir / filename).write_text(text, encoding="utf-8")
