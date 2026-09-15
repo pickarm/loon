@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "upstreams": {
+    "shadowrocket_rules": {
+      "repo": "https://github.com/kaonimei/Shadowrocket-ADBlock-Rules.git",
+      "ref": "main",
+      "sparse": []
+    }
+  },
+  "rulesets": [
+    {
+      "name": "BlockedSites",
+      "path": "Blacklist/Blocked.list",
+      "policy": "🌍 国外网站",
+      "tag": "黑名单",
+      "cn_guard": true,
+      "blacklist_residual": true,
+      "min_rules": 1000,
+      "sources": [
+        {
+          "repo": "shadowrocket_rules",
+          "paths": ["sr_top500_banlist.conf"]
+        },
+        {
+          "repo": "loyalsoldier",
+          "paths": ["ruleset/gfw.txt"],
+          "required": false
+        },
+        {
+          "repo": "loyalsoldier",
+          "paths": ["ruleset/greatfire.txt"],
+          "required": false
+        }
+      ]
+    }
+  ]
+}
