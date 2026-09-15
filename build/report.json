@@ -1,0 +1,397 @@
+{
+  "generated_at": "2026-09-15T21:31:42.946743+00:00",
+  "upstreams": {
+    "blackmatrix7": "4435ba4141d82aab94e541e29023fc6a1f627723",
+    "dnsmasq_cn": "c55bc322c2ebcb0e0d78614ef44951be629862ed",
+    "loyalsoldier": "cc5a2d5410b32f2836e9491138833fd89f388da9",
+    "shadowrocket_rules": "e37bd9a37af2d8be1d4af3eed79a3ee55ec3f5a8",
+    "fmz200": "3ca7487b4e4b86d9af76e50df72c62eacfbb659e"
+  },
+  "source_hashes": {
+    "loyalsoldier:ruleset/private.txt": "21764f1415da8a32",
+    "fmz200:Loon/rule/LAN.list": "ef10fc165dc70f18",
+    "blackmatrix7:rule/Loon/OpenAI/OpenAI.list": "3a0f865b94d4981e",
+    "fmz200:Loon/rule/OpenAI.list": "9caed92ffc89d230",
+    "fmz200:Loon/rule/AI.list": "41d954793b92b2b3",
+    "blackmatrix7:rule/Loon/Claude/Claude.list": "870e7e25d798e7f0",
+    "blackmatrix7:rule/Loon/Gemini/Gemini.list": "db8f69154426dca7",
+    "blackmatrix7:rule/Loon/Copilot/Copilot.list": "59aaaf1a521e8aff",
+    "blackmatrix7:rule/Loon/Telegram/Telegram.list": "f4b423def4d7e47e",
+    "loyalsoldier:ruleset/telegramcidr.txt": "0d7d5252552d4dfd",
+    "blackmatrix7:rule/Loon/Discord/Discord.list": "3d18c8fe716de068",
+    "blackmatrix7:rule/Loon/Twitter/Twitter.list": "64c836f2431ca0d4",
+    "blackmatrix7:rule/Loon/Facebook/Facebook.list": "39b012e0dd7b4f82",
+    "fmz200:Loon/rule/Facebook.list": "59b45f11bcdc4028",
+    "blackmatrix7:rule/Loon/Instagram/Instagram.list": "65f28f9253b0dbb2",
+    "blackmatrix7:rule/Loon/Reddit/Reddit.list": "8437bd0bbf321417",
+    "blackmatrix7:rule/Loon/Whatsapp/Whatsapp.list": "644fd145b484079f",
+    "blackmatrix7:rule/Loon/YouTube/YouTube.list": "aba3aab10f9acdaa",
+    "blackmatrix7:rule/Loon/Netflix/Netflix.list": "ecf67cdae0468902",
+    "blackmatrix7:rule/Loon/Disney/Disney.list": "65ededc7b608e440",
+    "blackmatrix7:rule/Loon/Spotify/Spotify.list": "577afc9442a38c57",
+    "blackmatrix7:rule/Loon/TikTok/TikTok.list": "403dccb2d51606d7",
+    "blackmatrix7:rule/Loon/Twitch/Twitch.list": "8b7853e6f60df358",
+    "blackmatrix7:rule/Loon/PrimeVideo/PrimeVideo.list": "4f957e0888cc89f6",
+    "blackmatrix7:rule/Loon/HBO/HBO.list": "f89c50e9a1f433dc",
+    "blackmatrix7:rule/Loon/Hulu/Hulu.list": "8490ca12309a2fa9",
+    "blackmatrix7:rule/Loon/GitHub/GitHub.list": "ced8ab0ecda5775d",
+    "blackmatrix7:rule/Loon/GitLab/GitLab.list": "0c41418dd3d49d63",
+    "blackmatrix7:rule/Loon/Docker/Docker.list": "2a608ae68e998467",
+    "blackmatrix7:rule/Loon/Cloudflare/Cloudflare.list": "167324d60eabc110",
+    "blackmatrix7:rule/Loon/OneDrive/OneDrive.list": "9352a648b6a170ec",
+    "blackmatrix7:rule/Loon/Dropbox/Dropbox.list": "5e66a0c3798c02e8",
+    "blackmatrix7:rule/Loon/Google/Google.list": "8ad1014c13d43d90",
+    "loyalsoldier:ruleset/google.txt": "71d385f264edcec5",
+    "blackmatrix7:rule/Loon/Microsoft/Microsoft.list": "22df1a1017ad5d41",
+    "blackmatrix7:rule/Loon/Apple/Apple.list": "6060f5bdfdc4c618",
+    "fmz200:Loon/rule/AppleAll.list": "511286412a164672",
+    "loyalsoldier:ruleset/apple.txt": "0ae52311f528d0a1",
+    "blackmatrix7:rule/Loon/PayPal/PayPal.list": "4ffb6f94d2f1eff8",
+    "fmz200:Loon/rule/Binance.list": "64ff3a467ba0f0a7",
+    "fmz200:Loon/rule/OKX.list": "a6a96bd759d66613",
+    "blackmatrix7:rule/Loon/Steam/Steam.list": "35826051b8797c76",
+    "blackmatrix7:rule/Loon/Epic/Epic.list": "8f5fcadadd967023",
+    "blackmatrix7:rule/Loon/PlayStation/PlayStation.list": "4ed23550ff8bd47f",
+    "blackmatrix7:rule/Loon/Xbox/Xbox.list": "8112c4b70412939a",
+    "blackmatrix7:rule/Loon/Nintendo/Nintendo.list": "ca3cf3ea5051ed22",
+    "blackmatrix7:rule/Loon/Blizzard/Blizzard.list": "4e30e5468f9f088c",
+    "blackmatrix7:rule/Loon/EA/EA.list": "83cd3c809f0cb781",
+    "blackmatrix7:rule/Loon/Riot/Riot.list": "ae276909536cb1c4",
+    "blackmatrix7:rule/Loon/Ubisoft/Ubisoft.list": "943e40e084bc7aa9",
+    "fmz200:Loon/rule/Douyin.list": "ea3abb769b0cdca3",
+    "fmz200:Loon/rule/RedBook.list": "48f8a304c44c0164",
+    "fmz200:Loon/rule/KuaiShou.list": "826dacbfd1a4891b",
+    "fmz200:Loon/rule/HonorOfKings.list": "f3b6f3329b9293a8",
+    "fmz200:Loon/rule/Soul.list": "6549b6c09f12b796",
+    "blackmatrix7:rule/Loon/Download/Download.list": "486ad8acd8200cc5",
+    "blackmatrix7:rule/Loon/PrivateTracker/PrivateTracker.list": "910ad846c9a866e5",
+    "blackmatrix7:rule/Loon/GoogleFCM/GoogleFCM.list": "9794f848f2935db9",
+    "blackmatrix7:rule/Loon/GoogleDrive/GoogleDrive.list": "1acef7d70321e817",
+    "blackmatrix7:rule/Loon/Bing/Bing.list": "4b9fe5e5f0cef4c4",
+    "blackmatrix7:rule/Loon/SteamCN/SteamCN.list": "82c144434e9199c5",
+    "blackmatrix7:rule/Loon/Speedtest/Speedtest.list": "4153a40136e407e6",
+    "blackmatrix7:rule/Loon/Bahamut/Bahamut.list": "5c6618ac00734921",
+    "blackmatrix7:rule/Loon/BiliBili/BiliBili.list": "9b22a7bdf9779234",
+    "blackmatrix7:rule/Loon/Emby/Emby.list": "9c7ed926bb046e61",
+    "shadowrocket_rules:sr_top500_banlist.conf": "9800ea9dccc3d8ae",
+    "loyalsoldier:ruleset/gfw.txt": "0915a1514000bcea",
+    "loyalsoldier:ruleset/greatfire.txt": "78babb106e6ebf2e",
+    "loyalsoldier:ruleset/direct.txt": "4921bd6f87dfef69",
+    "dnsmasq_cn:accelerated-domains.china.conf": "875b18c6b79c8eb2",
+    "loyalsoldier:ruleset/cncidr.txt": "e79719d1ed2fb7f7",
+    "loyalsoldier:ruleset/proxy.txt": "479ff2838dc83a48"
+  },
+  "rulesets": {
+    "Basic/LAN.list": {
+      "count": 139,
+      "cn_guard_removed": 0,
+      "policy": "DIRECT"
+    },
+    "AI/OpenAI.list": {
+      "count": 70,
+      "cn_guard_removed": 0,
+      "policy": "🤖 OpenAI"
+    },
+    "AI/AI.list": {
+      "count": 63,
+      "cn_guard_removed": 1,
+      "policy": "🤖 AI"
+    },
+    "AI/Claude.list": {
+      "count": 3,
+      "cn_guard_removed": 0,
+      "policy": "🤖 Claude"
+    },
+    "AI/Gemini.list": {
+      "count": 13,
+      "cn_guard_removed": 0,
+      "policy": "🤖 Gemini"
+    },
+    "AI/Copilot.list": {
+      "count": 50,
+      "cn_guard_removed": 1,
+      "policy": "🤖 Copilot"
+    },
+    "Social/Telegram.list": {
+      "count": 52,
+      "cn_guard_removed": 0,
+      "policy": "💬 Telegram"
+    },
+    "Social/Discord.list": {
+      "count": 29,
+      "cn_guard_removed": 0,
+      "policy": "💬 社交通讯"
+    },
+    "Social/Twitter.list": {
+      "count": 33,
+      "cn_guard_removed": 0,
+      "policy": "💬 社交通讯"
+    },
+    "Social/Facebook.list": {
+      "count": 569,
+      "cn_guard_removed": 1,
+      "policy": "💬 社交通讯"
+    },
+    "Social/Instagram.list": {
+      "count": 4,
+      "cn_guard_removed": 0,
+      "policy": "💬 社交通讯"
+    },
+    "Social/Reddit.list": {
+      "count": 8,
+      "cn_guard_removed": 0,
+      "policy": "💬 社交通讯"
+    },
+    "Social/Whatsapp.list": {
+      "count": 17,
+      "cn_guard_removed": 0,
+      "policy": "💬 社交通讯"
+    },
+    "Streaming/YouTube.list": {
+      "count": 189,
+      "cn_guard_removed": 1,
+      "policy": "📺 YouTube"
+    },
+    "Streaming/Netflix.list": {
+      "count": 1157,
+      "cn_guard_removed": 0,
+      "policy": "🎬 Netflix"
+    },
+    "Streaming/Disney.list": {
+      "count": 173,
+      "cn_guard_removed": 0,
+      "policy": "🎬 流媒体"
+    },
+    "Streaming/Spotify.list": {
+      "count": 30,
+      "cn_guard_removed": 0,
+      "policy": "🎵 Spotify"
+    },
+    "Streaming/TikTok.list": {
+      "count": 28,
+      "cn_guard_removed": 4,
+      "policy": "🎵 TikTok"
+    },
+    "Streaming/Twitch.list": {
+      "count": 21,
+      "cn_guard_removed": 0,
+      "policy": "🎬 流媒体"
+    },
+    "Streaming/PrimeVideo.list": {
+      "count": 18,
+      "cn_guard_removed": 0,
+      "policy": "🎬 流媒体"
+    },
+    "Streaming/HBO.list": {
+      "count": 49,
+      "cn_guard_removed": 0,
+      "policy": "🎬 流媒体"
+    },
+    "Streaming/Hulu.list": {
+      "count": 58,
+      "cn_guard_removed": 0,
+      "policy": "🎬 流媒体"
+    },
+    "Developer/GitHub.list": {
+      "count": 30,
+      "cn_guard_removed": 1,
+      "policy": "🧑‍💻 GitHub"
+    },
+    "Developer/GitLab.list": {
+      "count": 5,
+      "cn_guard_removed": 1,
+      "policy": "🧑‍💻 开发服务"
+    },
+    "Developer/Docker.list": {
+      "count": 7,
+      "cn_guard_removed": 0,
+      "policy": "🧑‍💻 开发服务"
+    },
+    "Developer/Cloudflare.list": {
+      "count": 51,
+      "cn_guard_removed": 14,
+      "policy": "🧑‍💻 开发服务"
+    },
+    "Storage/OneDrive.list": {
+      "count": 16,
+      "cn_guard_removed": 0,
+      "policy": "☁️ 云存储"
+    },
+    "Storage/Dropbox.list": {
+      "count": 17,
+      "cn_guard_removed": 0,
+      "policy": "☁️ 云存储"
+    },
+    "Vendor/Google.list": {
+      "count": 742,
+      "cn_guard_removed": 11,
+      "policy": "🔍 Google"
+    },
+    "Vendor/Microsoft.list": {
+      "count": 552,
+      "cn_guard_removed": 119,
+      "policy": "Ⓜ️ Microsoft"
+    },
+    "Vendor/Apple.list": {
+      "count": 1686,
+      "cn_guard_removed": 93,
+      "policy": "🍎 Apple"
+    },
+    "Finance/PayPal.list": {
+      "count": 236,
+      "cn_guard_removed": 12,
+      "policy": "💳 金融支付"
+    },
+    "Finance/Binance.list": {
+      "count": 13,
+      "cn_guard_removed": 0,
+      "policy": "💳 金融支付"
+    },
+    "Finance/OKX.list": {
+      "count": 2,
+      "cn_guard_removed": 1,
+      "policy": "💳 金融支付"
+    },
+    "Game/Steam.list": {
+      "count": 37,
+      "cn_guard_removed": 17,
+      "policy": "🎮 游戏平台"
+    },
+    "Game/Epic.list": {
+      "count": 15,
+      "cn_guard_removed": 0,
+      "policy": "🎮 游戏平台"
+    },
+    "Game/PlayStation.list": {
+      "count": 4,
+      "cn_guard_removed": 0,
+      "policy": "🎮 游戏平台"
+    },
+    "Game/Xbox.list": {
+      "count": 41,
+      "cn_guard_removed": 1,
+      "policy": "🎮 游戏平台"
+    },
+    "Game/Nintendo.list": {
+      "count": 114,
+      "cn_guard_removed": 12,
+      "policy": "🎮 游戏平台"
+    },
+    "Game/Blizzard.list": {
+      "count": 48,
+      "cn_guard_removed": 14,
+      "policy": "🎮 游戏平台"
+    },
+    "Game/EA.list": {
+      "count": 163,
+      "cn_guard_removed": 2,
+      "policy": "🎮 游戏平台"
+    },
+    "Game/Riot.list": {
+      "count": 53,
+      "cn_guard_removed": 2,
+      "policy": "🎮 游戏平台"
+    },
+    "Game/Ubisoft.list": {
+      "count": 1,
+      "cn_guard_removed": 0,
+      "policy": "🎮 游戏平台"
+    },
+    "ChinaApp/Douyin.list": {
+      "count": 2,
+      "cn_guard_removed": 0,
+      "policy": "DIRECT"
+    },
+    "ChinaApp/RedBook.list": {
+      "count": 1,
+      "cn_guard_removed": 0,
+      "policy": "DIRECT"
+    },
+    "ChinaApp/KuaiShou.list": {
+      "count": 2,
+      "cn_guard_removed": 0,
+      "policy": "DIRECT"
+    },
+    "ChinaApp/HonorOfKings.list": {
+      "count": 6,
+      "cn_guard_removed": 0,
+      "policy": "DIRECT"
+    },
+    "ChinaApp/Soul.list": {
+      "count": 30,
+      "cn_guard_removed": 0,
+      "policy": "DIRECT"
+    },
+    "Download/Download.list": {
+      "count": 7,
+      "cn_guard_removed": 0,
+      "policy": "DIRECT"
+    },
+    "Download/PrivateTracker.list": {
+      "count": 248,
+      "cn_guard_removed": 0,
+      "policy": "DIRECT"
+    },
+    "Vendor/GoogleFCM.list": {
+      "count": 41,
+      "cn_guard_removed": 0,
+      "policy": "🔍 Google"
+    },
+    "Storage/GoogleDrive.list": {
+      "count": 8,
+      "cn_guard_removed": 0,
+      "policy": "🔍 Google"
+    },
+    "Vendor/Bing.list": {
+      "count": 8,
+      "cn_guard_removed": 1,
+      "policy": "Ⓜ️ Microsoft"
+    },
+    "Game/SteamCN.list": {
+      "count": 17,
+      "cn_guard_removed": 0,
+      "policy": "DIRECT"
+    },
+    "Utility/Speedtest.list": {
+      "count": 6,
+      "cn_guard_removed": 0,
+      "policy": "🌍 国外网站"
+    },
+    "Streaming/Bahamut.list": {
+      "count": 8,
+      "cn_guard_removed": 0,
+      "policy": "🎬 流媒体"
+    },
+    "ChinaApp/BiliBili.list": {
+      "count": 127,
+      "cn_guard_removed": 0,
+      "policy": "DIRECT"
+    },
+    "Streaming/Emby.list": {
+      "count": 48,
+      "cn_guard_removed": 3,
+      "policy": "🎬 流媒体"
+    },
+    "Blacklist/Blocked.list": {
+      "count": 29788,
+      "cn_guard_removed": 416,
+      "policy": "🌍 国外网站"
+    },
+    "China/Direct.list": {
+      "count": 111645,
+      "cn_guard_removed": 0,
+      "policy": "DIRECT"
+    },
+    "China/ChinaIP.list": {
+      "count": 9647,
+      "cn_guard_removed": 0,
+      "policy": "DIRECT"
+    },
+    "Proxy/Global.list": {
+      "count": 26906,
+      "cn_guard_removed": 312,
+      "policy": "🌍 国外网站"
+    }
+  },
+  "total_rules": 185151
+}
