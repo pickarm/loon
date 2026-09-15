@@ -86,6 +86,9 @@ FINAL,兜底后备策略
 [Rewrite]
 
 [Script]
+# Loon 无法在运行时删除策略组选项；此守卫会自动检测空地区，并把误选/失效地区回退到兜底。
+network-changed script-path=https://raw.githubusercontent.com/pickarm/loon/release/runtime/region_guard.js,tag=地区节点可用性检查,timeout=10,enable=true
+cron "*/10 * * * *" script-path=https://raw.githubusercontent.com/pickarm/loon/release/runtime/region_guard.js,tag=地区节点定时检查,timeout=10,enable=true
 
 [Plugin]
 # 插件生态沿用可莉；插件与规则策略相互独立，可在 Loon 中自行启停。
