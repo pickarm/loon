@@ -1,0 +1,7 @@
+{
+  "service": {
+    "Blacklist/Blocked.list": [
+      "wikipedia.org"
+    ]
+  }
+}

@@ -29,6 +29,7 @@ def keep_ruleset(item: dict) -> bool:
 
 def merge_rulesets() -> None:
     cfg = read_json(SOURCES)
+    cfg.setdefault("upstreams", {})
     original = list(cfg.get("rulesets", []))
     base = [item for item in original if keep_ruleset(item)]
     excluded = len(original) - len(base)
@@ -39,6 +40,17 @@ def merge_rulesets() -> None:
     if SOURCE_EXTENSIONS.exists():
         for path in sorted(SOURCE_EXTENSIONS.glob("*.json")):
             data = read_json(path)
+
+            # Extensions may introduce a new upstream together with their rules.
+            # Reusing an existing key is allowed only when the metadata is identical.
+            for key, meta in data.get("upstreams", {}).items():
+                current = cfg["upstreams"].get(key)
+                if current is not None and current != meta:
+                    raise ValueError(
+                        f"conflicting upstream definition in {path}: {key}"
+                    )
+                cfg["upstreams"].setdefault(key, meta)
+
             for item in data.get("rulesets", []):
                 if not keep_ruleset(item):
                     excluded += 1

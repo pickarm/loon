@@ -26,8 +26,8 @@ FLAVORS = {
 }
 
 # Fine-grained files stay in rules/* for maintenance and debugging. Loon only
-# subscribes to the compact bundles below, so its Rules page stays close to the
-# visible policy layout instead of showing 60+ individual rule subscriptions.
+# subscribes to compact bundles, so the Rules page stays close to the visible
+# policy layout instead of showing 60+ individual rule subscriptions.
 POLICY_ALIASES = {
     "DIRECT": "DIRECT",
     "🤖 OpenAI": "🤖 AI平台",
@@ -80,9 +80,9 @@ FORBIDDEN_LEGACY_GROUPS = {
     "🌐 国外网站",
 }
 
-# Order here is also the order shown on Loon's Rules page.
+# Remote Rule is first-match-wins. Keep narrow service bundles first, then the
+# broad DIRECT set, then blocked-site residuals, and only then the generic tail.
 BUNDLE_SPECS = [
-    {"policy": "DIRECT", "path": "Bundles/Direct.list", "tag": "🎯 全球直连"},
     {"policy": "🤖 AI平台", "path": "Bundles/AI.list", "tag": "🤖 AI平台"},
     {"policy": "📲 电报消息", "path": "Bundles/Telegram.list", "tag": "📲 电报消息"},
     {"policy": "📹 油管视频", "path": "Bundles/YouTube.list", "tag": "📹 油管视频"},
@@ -92,8 +92,30 @@ BUNDLE_SPECS = [
     {"policy": "🍎 苹果服务", "path": "Bundles/Apple.list", "tag": "🍎 苹果服务"},
     {"policy": "🎮 游戏平台", "path": "Bundles/Game.list", "tag": "🎮 游戏平台"},
     {"policy": "💳 金融平台", "path": "Bundles/Finance.list", "tag": "💳 金融平台"},
-    {"policy": "兜底后备策略", "path": "Bundles/Fallback.list", "tag": "🐟 漏网之鱼"},
+    {"policy": "DIRECT", "path": "Bundles/Direct.list", "tag": "🎯 全球直连"},
+    {"policy": "兜底后备策略", "path": "Bundles/Blacklist.list", "tag": "🧱 黑名单", "kind": "blacklist"},
+    {"policy": "兜底后备策略", "path": "Bundles/Fallback.list", "tag": "🐟 漏网之鱼", "kind": "fallback"},
 ]
+
+RULE_TYPE_ORDER = {
+    "DOMAIN": 0,
+    "DOMAIN-SUFFIX": 1,
+    "DOMAIN-WILDCARD": 2,
+    "DOMAIN-KEYWORD": 3,
+    "USER-AGENT": 4,
+    "PROCESS-NAME": 5,
+    "PROCESS-PATH": 6,
+    "URL-REGEX": 7,
+    "PROTOCOL": 8,
+    "DST-PORT": 9,
+    "SRC-PORT": 10,
+    "SRC-IP": 11,
+    "IP-ASN": 12,
+    "IP-CIDR": 13,
+    "IP-CIDR6": 14,
+    "GEOIP": 15,
+    "RULE-SET": 16,
+}
 
 RAW_GITHUB = re.compile(
     r"https://raw\.githubusercontent\.com/"
@@ -168,24 +190,107 @@ def file_rules(path: Path) -> set[str]:
     return rules
 
 
+def split_rule(rule: str) -> tuple[str, str]:
+    parts = rule.split(",", 2)
+    typ = parts[0].upper() if parts else ""
+    value = parts[1].lower().strip(".") if len(parts) > 1 else ""
+    return typ, value
+
+
+def coverage_index(rules: set[str]) -> tuple[set[str], set[str], set[str]]:
+    exact: set[str] = set()
+    suffix: set[str] = set()
+    other: set[str] = set()
+    for rule in rules:
+        typ, value = split_rule(rule)
+        if typ == "DOMAIN":
+            exact.add(value)
+        elif typ == "DOMAIN-SUFFIX":
+            suffix.add(value)
+        else:
+            other.add(rule)
+    return exact, suffix, other
+
+
+def covered_by(rule: str, index: tuple[set[str], set[str], set[str]]) -> bool:
+    exact, suffixes, other = index
+    typ, value = split_rule(rule)
+    if typ == "DOMAIN":
+        if value in exact:
+            return True
+        labels = value.split(".")
+        return any(".".join(labels[i:]) in suffixes for i in range(len(labels)))
+    if typ == "DOMAIN-SUFFIX":
+        labels = value.split(".")
+        return any(".".join(labels[i:]) in suffixes for i in range(len(labels)))
+    return rule in other
+
+
+def rule_sort_key(rule: str) -> tuple[int, str]:
+    typ = rule.split(",", 1)[0].upper()
+    return RULE_TYPE_ORDER.get(typ, 99), rule.lower()
+
+
 def build_bundles() -> list[dict]:
-    grouped: dict[str, set[str]] = {spec["policy"]: set() for spec in BUNDLE_SPECS}
-    sources: dict[str, list[str]] = {spec["policy"]: [] for spec in BUNDLE_SPECS}
+    grouped: dict[str, set[str]] = {
+        policy: set() for policy in ALLOWED_OUTPUT_POLICIES
+    }
+    sources: dict[str, list[str]] = {
+        policy: [] for policy in ALLOWED_OUTPUT_POLICIES
+    }
+    raw_blacklist: set[str] = set()
+    blacklist_sources: list[str] = []
 
     for item in CFG["rulesets"]:
         src = RULE_DIR / item["path"]
         if not src.exists():
             continue
+        rules = file_rules(src)
+        if item.get("blacklist_residual"):
+            raw_blacklist.update(rules)
+            blacklist_sources.append(item["path"])
+            continue
         policy = output_policy(item)
-        grouped.setdefault(policy, set()).update(file_rules(src))
+        grouped.setdefault(policy, set()).update(rules)
         sources.setdefault(policy, []).append(item["path"])
+
+    if not raw_blacklist:
+        raise ValueError("blacklist source ruleset is missing or empty")
+
+    # Blacklist is only the blocked-site residual: remove anything already
+    # handled by a visible service group or DIRECT. The generic fallback group
+    # intentionally does not exclude it, because many blocked sites live there.
+    claimed: set[str] = set(grouped.get("DIRECT", set()))
+    for policy in VISIBLE_SERVICE_POLICIES:
+        claimed.update(grouped.get(policy, set()))
+    claimed_index = coverage_index(claimed)
+    blacklist = {rule for rule in raw_blacklist if not covered_by(rule, claimed_index)}
+    if not blacklist:
+        raise ValueError("blacklist residual became empty after de-duplication")
+
+    # Remove blacklisted domains from the generic fallback bundle so the same
+    # domain is not represented twice at the published bundle layer.
+    blacklist_index = coverage_index(blacklist)
+    fallback = {
+        rule
+        for rule in grouped.get("兜底后备策略", set())
+        if not covered_by(rule, blacklist_index)
+    }
+    grouped["兜底后备策略"] = fallback
 
     built_specs: list[dict] = []
     for spec in BUNDLE_SPECS:
+        kind = spec.get("kind")
         policy = spec["policy"]
-        rules = grouped.get(policy, set())
+        if kind == "blacklist":
+            rules = blacklist
+            source_paths = blacklist_sources
+        else:
+            rules = grouped.get(policy, set())
+            source_paths = sources.get(policy, [])
+
         if not rules:
-            raise ValueError(f"bundle {spec['path']} for {policy} is empty")
+            raise ValueError(f"bundle {spec['path']} for {spec['tag']} is empty")
         out = RULE_DIR / spec["path"]
         out.parent.mkdir(parents=True, exist_ok=True)
         header = [
@@ -194,8 +299,10 @@ def build_bundles() -> list[dict]:
             f"# POLICY: {policy}",
             f"# RULES: {len(rules)}",
         ]
-        header += [f"# SOURCE-RULESET: {p}" for p in sources.get(policy, [])]
-        body = "\n".join(sorted(rules, key=lambda x: (x.split(",", 1)[0], x.lower())))
+        if kind == "blacklist":
+            header.append("# NOTE: blocked-site residual after removing DIRECT and named service groups")
+        header += [f"# SOURCE-RULESET: {p}" for p in source_paths]
+        body = "\n".join(sorted(rules, key=rule_sort_key))
         out.write_text("\n".join(header) + "\n" + body + "\n", encoding="utf-8")
         built_specs.append({**spec, "count": len(rules)})
 
