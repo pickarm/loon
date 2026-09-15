@@ -7,7 +7,6 @@ on:
     paths:
       - 'sources/**'
       - 'scripts/**'
-      - 'runtime/**'
       - 'templates/**'
       - 'override/**'
       - 'tests/**'
@@ -26,8 +25,6 @@ concurrency:
 
 jobs:
   build:
-    # Keep release publishing on a stable dedicated image instead of following
-    # ubuntu-latest runner-pool changes. PR validation still tracks latest.
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
@@ -45,11 +42,6 @@ jobs:
           git fetch origin release:refs/remotes/origin/release || true
           git show origin/release:build/report.json > .previous-report.json 2>/dev/null || true
 
-      - name: Validate runtime scripts
-        run: |
-          node --check runtime/region_guard.js
-          node tests/region_guard.test.js
-
       - name: Prepare ruleset catalog
         run: python scripts/prepare_catalog.py
 
@@ -62,16 +54,13 @@ jobs:
           set -euo pipefail
           rm -rf /tmp/loon-release
           mkdir -p /tmp/loon-release
-          cp -a rules config build runtime /tmp/loon-release/
+          cp -a rules config build /tmp/loon-release/
           cat > /tmp/loon-release/README.md <<'TXT'
           # pickarm/loon generated release
 
           本分支由 GitHub Actions 自动生成。源配置、构建器与上游定义请查看 `main` 分支。
           TXT
 
-          # prepare_catalog.py intentionally materializes extension catalogs into
-          # tracked base JSON files for the build. Restore those temporary edits
-          # before switching to the orphan release branch.
           git restore -- sources/sources.json tests/expectations.json
 
           git config user.name 'github-actions[bot]'
@@ -80,6 +69,6 @@ jobs:
           git rm -rf . >/dev/null 2>&1 || true
           git clean -fdx >/dev/null 2>&1 || true
           cp -a /tmp/loon-release/. .
-          git add README.md rules config build runtime
+          git add README.md rules config build
           git commit -m "chore: update generated rules $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           git push --force origin HEAD:release

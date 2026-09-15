@@ -24,9 +24,9 @@ FLAVORS = {
     },
 }
 
-# Fine-grained rules are folded into a small Kelee-style service layer. There is
-# deliberately no generic "node selection" group: every visible service group
-# directly exposes the regional manual/latency groups from the template.
+# Rules remain fine-grained, but visible policies are intentionally compact.
+# Ordinary overseas traffic is sent straight to the single fallback policy;
+# only services that benefit from a persistent user-selected exit stay visible.
 POLICY_ALIASES = {
     "DIRECT": "DIRECT",
     "🤖 OpenAI": "🤖 AI平台",
@@ -35,21 +35,21 @@ POLICY_ALIASES = {
     "🤖 Gemini": "🤖 AI平台",
     "🤖 Copilot": "🤖 AI平台",
     "💬 Telegram": "📲 电报消息",
-    "💬 社交通讯": "🌐 国外网站",
+    "💬 社交通讯": "兜底后备策略",
     "📺 YouTube": "📹 油管视频",
     "🎬 Netflix": "🎥 奈飞视频",
     "🎬 流媒体": "🌍 国外媒体",
     "🎵 Spotify": "🌍 国外媒体",
     "🎵 TikTok": "🌍 国外媒体",
-    "🧑‍💻 GitHub": "🌐 国外网站",
-    "🧑‍💻 开发服务": "🌐 国外网站",
-    "☁️ 云存储": "🌐 国外网站",
-    "🔍 Google": "🌐 国外网站",
+    "🧑‍💻 GitHub": "兜底后备策略",
+    "🧑‍💻 开发服务": "兜底后备策略",
+    "☁️ 云存储": "兜底后备策略",
+    "🔍 Google": "兜底后备策略",
     "Ⓜ️ Microsoft": "Ⓜ️ 微软服务",
     "🍎 Apple": "🍎 苹果服务",
-    "💳 金融支付": "🌐 国外网站",
+    "💳 金融支付": "💳 金融平台",
     "🎮 游戏平台": "🎮 游戏平台",
-    "🌍 国外网站": "🌐 国外网站",
+    "🌍 国外网站": "兜底后备策略",
 }
 
 RULESET_POLICY_OVERRIDES = {
@@ -66,9 +66,10 @@ VISIBLE_SERVICE_POLICIES = {
     "Ⓜ️ 微软服务",
     "🍎 苹果服务",
     "🎮 游戏平台",
-    "🌐 国外网站",
+    "💳 金融平台",
 }
-ALLOWED_OUTPUT_POLICIES = BUILTIN_POLICIES | VISIBLE_SERVICE_POLICIES
+SPECIAL_POLICIES = {"兜底后备策略"}
+ALLOWED_OUTPUT_POLICIES = BUILTIN_POLICIES | VISIBLE_SERVICE_POLICIES | SPECIAL_POLICIES
 FORBIDDEN_LEGACY_GROUPS = {
     "🚀 节点选择",
     "🚀 手动切换",
@@ -76,6 +77,7 @@ FORBIDDEN_LEGACY_GROUPS = {
     "🎯 全球直连",
     "🛑 广告拦截",
     "🐟 漏网之鱼",
+    "🌐 国外网站",
 }
 
 RAW_GITHUB = re.compile(
@@ -102,30 +104,48 @@ def output_policy(item: dict) -> str:
     return policy
 
 
+def group_line(name: str) -> str | None:
+    match = re.search(rf"(?m)^{re.escape(name)}\s*=\s*(.+)$", TEMPLATE)
+    return match.group(1) if match else None
+
+
 def validate_template_policy_groups() -> None:
-    missing = []
-    for policy in sorted(VISIBLE_SERVICE_POLICIES):
-        pattern = rf"(?m)^{re.escape(policy)}\s*="
-        if re.search(pattern, TEMPLATE) is None:
-            missing.append(policy)
+    missing = [policy for policy in sorted(VISIBLE_SERVICE_POLICIES) if group_line(policy) is None]
     if missing:
         raise ValueError(
             "Loon template is missing service policy groups: " + ", ".join(missing)
         )
 
-    present_forbidden = []
-    for policy in sorted(FORBIDDEN_LEGACY_GROUPS):
-        pattern = rf"(?m)^{re.escape(policy)}\s*="
-        if re.search(pattern, TEMPLATE) is not None:
-            present_forbidden.append(policy)
+    present_forbidden = [policy for policy in sorted(FORBIDDEN_LEGACY_GROUPS) if group_line(policy) is not None]
     if present_forbidden:
         raise ValueError(
             "Loon template still contains deprecated intermediary groups: "
             + ", ".join(present_forbidden)
         )
 
-    if re.search(r"(?m)^兜底后备策略\s*=", TEMPLATE) is None:
+    fallback = group_line("兜底后备策略")
+    if fallback is None:
         raise ValueError("Loon template is missing 兜底后备策略")
+    if not fallback.startswith("fallback,"):
+        raise ValueError("兜底后备策略 must remain a fallback group")
+    if "节点" not in fallback:
+        raise ValueError("兜底后备策略 must consume Remote Filter node sets directly")
+
+    # Business groups must expose Remote Filter node sets directly. This blocks
+    # the old second-level region groups from returning in future edits.
+    for policy in sorted(VISIBLE_SERVICE_POLICIES):
+        line = group_line(policy) or ""
+        if not line.startswith("select,"):
+            raise ValueError(f"{policy} must be a select group")
+        if "节点" not in line:
+            raise ValueError(f"{policy} must reference Remote Filter node sets directly")
+        if "手动策略" in line or "时延优选" in line:
+            raise ValueError(f"{policy} still references nested regional policy groups")
+
+    # No old regional groups should remain as visible cards.
+    if re.search(r"(?m)^(?:香港|台湾|日本|韩国|新加坡|美国).*(?:手动策略|时延优选)\s*=", TEMPLATE):
+        raise ValueError("template still defines nested regional manual/latency groups")
+
     if "FINAL,兜底后备策略" not in TEMPLATE:
         raise ValueError("Loon FINAL must point directly to 兜底后备策略")
 
