@@ -40,7 +40,9 @@ jobs:
           git show origin/release:build/report.json > .previous-report.json 2>/dev/null || true
 
       - name: Validate runtime scripts
-        run: node --check runtime/region_guard.js
+        run: |
+          node --check runtime/region_guard.js
+          node tests/region_guard.test.js
 
       - name: Prepare ruleset catalog
         run: python scripts/prepare_catalog.py
