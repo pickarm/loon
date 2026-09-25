@@ -3,6 +3,10 @@
 # App Attest endpoints cannot be stripped by broad DIRECT/Apple rules.
 # Source of truth: OpenAI network recommendations + iOS App Attest diagnostic.
 
+# Dynamic ChatGPT backends. Keep these locally even if an upstream later drops them.
+AND,((DOMAIN-KEYWORD, chatgpt-async-webps-prod-), (DOMAIN-SUFFIX, webpubsub.azure.com))
+AND,((DOMAIN-KEYWORD, openaicom-api-), (DOMAIN-SUFFIX, azurefd.net))
+
 DOMAIN-SUFFIX,auth.openai.com
 DOMAIN-SUFFIX,chatgpt.com
 DOMAIN-SUFFIX,ct.sendgrid.net
