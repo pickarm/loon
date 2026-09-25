@@ -1,18 +1,58 @@
 {
-  "direct": ["baidu.com", "qq.com", "weixin.qq.com", "bilibili.com", "jd.com", "taobao.com"],
+  "direct": [
+    "baidu.com",
+    "qq.com",
+    "weixin.qq.com",
+    "bilibili.com",
+    "jd.com",
+    "taobao.com"
+  ],
   "service": {
-    "AI/OpenAI.list": ["chatgpt.com", "openai.com"],
-    "Social/Telegram.list": ["telegram.org"],
-    "Social/Whatsapp.list": ["whatsapp.biz"],
-    "Developer/GitHub.list": ["github.com"],
-    "Developer/GitLab.list": ["gitlab.com"],
-    "Storage/OneDrive.list": ["1drv.com"],
-    "Storage/Dropbox.list": ["dropbox.com"],
-    "Streaming/Netflix.list": ["netflix.com"],
-    "Streaming/YouTube.list": ["youtube.com"],
-    "Streaming/PrimeVideo.list": ["atv-ps.amazon.com"],
-    "Streaming/HBO.list": ["cinemax.com"],
-    "Finance/PayPal.list": ["accountpaypal.com"],
-    "Game/Blizzard.list": ["battle.net"]
+    "AI/OpenAI.list": [
+      "chatgpt.com",
+      "openai.com"
+    ],
+    "Social/Telegram.list": [
+      "telegram.org"
+    ],
+    "Social/Whatsapp.list": [
+      "whatsapp.biz"
+    ],
+    "Developer/GitHub.list": [
+      "github.com"
+    ],
+    "Developer/GitLab.list": [
+      "gitlab.com"
+    ],
+    "Storage/OneDrive.list": [
+      "1drv.com"
+    ],
+    "Storage/Dropbox.list": [
+      "dropbox.com"
+    ],
+    "Streaming/Netflix.list": [
+      "netflix.com"
+    ],
+    "Streaming/YouTube.list": [
+      "youtube.com"
+    ],
+    "Streaming/PrimeVideo.list": [
+      "atv-ps.amazon.com"
+    ],
+    "Streaming/HBO.list": [
+      "cinemax.com"
+    ],
+    "Finance/PayPal.list": [
+      "accountpaypal.com"
+    ],
+    "Game/Blizzard.list": [
+      "battle.net"
+    ]
+  },
+  "exact_rules": {
+    "AI/AI.list": [
+      "AND,((DOMAIN-KEYWORD, chatgpt-async-webps-prod-), (DOMAIN-SUFFIX, webpubsub.azure.com))",
+      "AND,((DOMAIN-KEYWORD, openaicom-api-), (DOMAIN-SUFFIX, azurefd.net))"
+    ]
   }
 }
