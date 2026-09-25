@@ -222,7 +222,7 @@ def validate_template_policy_groups() -> None:
     if "bootstrap config" not in TEMPLATE or "DO NOT refresh/replace this whole" not in TEMPLATE:
         raise ValueError("published full config must carry the bootstrap-only safety warning")
 
-    remote_proxy_match = re.search(r"(?s)\[Remote Proxy\]\n(.*?)\n\[Remote Filter\]", TEMPLATE)
+    remote_proxy_match = re.search(r"(?ms)^\[Remote Proxy\]\s*$\n(.*?)^\[Remote Filter\]\s*$", TEMPLATE)
     if not remote_proxy_match:
         raise ValueError("Loon template is missing Remote Proxy block")
     active_remote_proxy_lines = [
