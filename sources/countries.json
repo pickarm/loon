@@ -1,0 +1,1663 @@
+{
+  "version": 1,
+  "countries": [
+    {
+      "code": "HK",
+      "alpha3": "HKG",
+      "name": "Hong Kong",
+      "label": "香港",
+      "terms": [
+        "香港",
+        "港",
+        "Hong Kong",
+        "九龙",
+        "湾仔"
+      ]
+    },
+    {
+      "code": "TW",
+      "alpha3": "TWN",
+      "name": "Taiwan, Province of China",
+      "label": "台湾",
+      "terms": [
+        "台湾",
+        "台",
+        "Taiwan",
+        "Taipei",
+        "台北",
+        "新竹",
+        "台中",
+        "台南",
+        "高雄"
+      ]
+    },
+    {
+      "code": "JP",
+      "alpha3": "JPN",
+      "name": "Japan",
+      "label": "日本",
+      "terms": [
+        "日本",
+        "Japan",
+        "东京",
+        "大阪",
+        "川日",
+        "泉日",
+        "埼玉"
+      ]
+    },
+    {
+      "code": "KR",
+      "alpha3": "KOR",
+      "name": "Korea, Republic of",
+      "label": "韩国",
+      "terms": [
+        "韩国",
+        "韓国",
+        "韩",
+        "Korea",
+        "South Korea",
+        "Seoul",
+        "首尔"
+      ]
+    },
+    {
+      "code": "SG",
+      "alpha3": "SGP",
+      "name": "Singapore",
+      "label": "新加坡",
+      "terms": [
+        "新加坡",
+        "狮城",
+        "坡",
+        "Singapore"
+      ]
+    },
+    {
+      "code": "US",
+      "alpha3": "USA",
+      "name": "United States",
+      "label": "美国",
+      "terms": [
+        "美国",
+        "美",
+        "United States",
+        "USA",
+        "洛杉矶",
+        "圣何塞",
+        "西雅图",
+        "达拉斯",
+        "芝加哥",
+        "纽约",
+        "凤凰城",
+        "硅谷",
+        "波特兰",
+        "费利蒙",
+        "拉斯维加斯"
+      ]
+    },
+    {
+      "code": "CA",
+      "alpha3": "CAN",
+      "name": "Canada",
+      "label": "加拿大",
+      "terms": [
+        "加拿大",
+        "Canada",
+        "多伦多",
+        "温哥华",
+        "蒙特利尔"
+      ]
+    },
+    {
+      "code": "GB",
+      "alpha3": "GBR",
+      "name": "United Kingdom",
+      "label": "英国",
+      "terms": [
+        "英国",
+        "United Kingdom",
+        "Great Britain",
+        "UK",
+        "London",
+        "伦敦"
+      ]
+    },
+    {
+      "code": "DE",
+      "alpha3": "DEU",
+      "name": "Germany",
+      "label": "德国",
+      "terms": [
+        "德国",
+        "Germany",
+        "法兰克福",
+        "Frankfurt",
+        "柏林",
+        "Berlin"
+      ]
+    },
+    {
+      "code": "FR",
+      "alpha3": "FRA",
+      "name": "France",
+      "label": "法国",
+      "terms": [
+        "法国",
+        "France",
+        "巴黎",
+        "Paris"
+      ]
+    },
+    {
+      "code": "NL",
+      "alpha3": "NLD",
+      "name": "Netherlands",
+      "label": "荷兰",
+      "terms": [
+        "荷兰",
+        "Netherlands",
+        "Amsterdam",
+        "阿姆斯特丹"
+      ]
+    },
+    {
+      "code": "CH",
+      "alpha3": "CHE",
+      "name": "Switzerland",
+      "label": "瑞士",
+      "terms": [
+        "瑞士",
+        "Switzerland",
+        "Zurich",
+        "苏黎世"
+      ]
+    },
+    {
+      "code": "AU",
+      "alpha3": "AUS",
+      "name": "Australia",
+      "label": "澳大利亚",
+      "terms": [
+        "澳大利亚",
+        "澳洲",
+        "Australia",
+        "Sydney",
+        "悉尼",
+        "Melbourne",
+        "墨尔本"
+      ]
+    },
+    {
+      "code": "NZ",
+      "alpha3": "NZL",
+      "name": "New Zealand",
+      "label": "新西兰",
+      "terms": [
+        "新西兰",
+        "New Zealand",
+        "Auckland",
+        "奥克兰"
+      ]
+    },
+    {
+      "code": "MY",
+      "alpha3": "MYS",
+      "name": "Malaysia",
+      "label": "马来西亚",
+      "terms": [
+        "马来西亚",
+        "Malaysia",
+        "Kuala Lumpur",
+        "吉隆坡"
+      ]
+    },
+    {
+      "code": "TH",
+      "alpha3": "THA",
+      "name": "Thailand",
+      "label": "泰国",
+      "terms": [
+        "泰国",
+        "Thailand",
+        "Bangkok",
+        "曼谷"
+      ]
+    },
+    {
+      "code": "PH",
+      "alpha3": "PHL",
+      "name": "Philippines",
+      "label": "菲律宾",
+      "terms": [
+        "菲律宾",
+        "Philippines",
+        "Manila",
+        "马尼拉"
+      ]
+    },
+    {
+      "code": "ID",
+      "alpha3": "IDN",
+      "name": "Indonesia",
+      "label": "印度尼西亚",
+      "terms": [
+        "印度尼西亚",
+        "印尼",
+        "Indonesia",
+        "Jakarta",
+        "雅加达"
+      ]
+    },
+    {
+      "code": "VN",
+      "alpha3": "VNM",
+      "name": "Viet Nam",
+      "label": "越南",
+      "terms": [
+        "越南",
+        "Vietnam",
+        "Viet Nam",
+        "Ho Chi Minh",
+        "胡志明",
+        "Hanoi",
+        "河内"
+      ]
+    },
+    {
+      "code": "IN",
+      "alpha3": "IND",
+      "name": "India",
+      "label": "印度",
+      "terms": [
+        "印度",
+        "India",
+        "Mumbai",
+        "孟买",
+        "Delhi",
+        "德里"
+      ]
+    },
+    {
+      "code": "AE",
+      "alpha3": "ARE",
+      "name": "United Arab Emirates",
+      "label": "阿联酋",
+      "terms": [
+        "阿联酋",
+        "UAE",
+        "United Arab Emirates",
+        "Dubai",
+        "迪拜"
+      ]
+    },
+    {
+      "code": "AF",
+      "alpha3": "AFG",
+      "name": "Afghanistan"
+    },
+    {
+      "code": "AX",
+      "alpha3": "ALA",
+      "name": "Åland Islands"
+    },
+    {
+      "code": "AL",
+      "alpha3": "ALB",
+      "name": "Albania"
+    },
+    {
+      "code": "DZ",
+      "alpha3": "DZA",
+      "name": "Algeria"
+    },
+    {
+      "code": "AS",
+      "alpha3": "ASM",
+      "name": "American Samoa"
+    },
+    {
+      "code": "AD",
+      "alpha3": "AND",
+      "name": "Andorra"
+    },
+    {
+      "code": "AO",
+      "alpha3": "AGO",
+      "name": "Angola"
+    },
+    {
+      "code": "AI",
+      "alpha3": "AIA",
+      "name": "Anguilla"
+    },
+    {
+      "code": "AQ",
+      "alpha3": "ATA",
+      "name": "Antarctica"
+    },
+    {
+      "code": "AG",
+      "alpha3": "ATG",
+      "name": "Antigua and Barbuda"
+    },
+    {
+      "code": "AM",
+      "alpha3": "ARM",
+      "name": "Armenia"
+    },
+    {
+      "code": "AW",
+      "alpha3": "ABW",
+      "name": "Aruba"
+    },
+    {
+      "code": "AZ",
+      "alpha3": "AZE",
+      "name": "Azerbaijan"
+    },
+    {
+      "code": "BS",
+      "alpha3": "BHS",
+      "name": "Bahamas"
+    },
+    {
+      "code": "BH",
+      "alpha3": "BHR",
+      "name": "Bahrain"
+    },
+    {
+      "code": "BD",
+      "alpha3": "BGD",
+      "name": "Bangladesh"
+    },
+    {
+      "code": "BB",
+      "alpha3": "BRB",
+      "name": "Barbados"
+    },
+    {
+      "code": "BY",
+      "alpha3": "BLR",
+      "name": "Belarus"
+    },
+    {
+      "code": "BZ",
+      "alpha3": "BLZ",
+      "name": "Belize"
+    },
+    {
+      "code": "BJ",
+      "alpha3": "BEN",
+      "name": "Benin"
+    },
+    {
+      "code": "BM",
+      "alpha3": "BMU",
+      "name": "Bermuda"
+    },
+    {
+      "code": "BT",
+      "alpha3": "BTN",
+      "name": "Bhutan"
+    },
+    {
+      "code": "BO",
+      "alpha3": "BOL",
+      "name": "Bolivia, Plurinational State of"
+    },
+    {
+      "code": "BQ",
+      "alpha3": "BES",
+      "name": "Bonaire, Sint Eustatius and Saba"
+    },
+    {
+      "code": "BA",
+      "alpha3": "BIH",
+      "name": "Bosnia and Herzegovina"
+    },
+    {
+      "code": "BW",
+      "alpha3": "BWA",
+      "name": "Botswana"
+    },
+    {
+      "code": "BV",
+      "alpha3": "BVT",
+      "name": "Bouvet Island"
+    },
+    {
+      "code": "IO",
+      "alpha3": "IOT",
+      "name": "British Indian Ocean Territory"
+    },
+    {
+      "code": "BN",
+      "alpha3": "BRN",
+      "name": "Brunei Darussalam"
+    },
+    {
+      "code": "BG",
+      "alpha3": "BGR",
+      "name": "Bulgaria"
+    },
+    {
+      "code": "BF",
+      "alpha3": "BFA",
+      "name": "Burkina Faso"
+    },
+    {
+      "code": "BI",
+      "alpha3": "BDI",
+      "name": "Burundi"
+    },
+    {
+      "code": "CV",
+      "alpha3": "CPV",
+      "name": "Cabo Verde"
+    },
+    {
+      "code": "CM",
+      "alpha3": "CMR",
+      "name": "Cameroon"
+    },
+    {
+      "code": "KY",
+      "alpha3": "CYM",
+      "name": "Cayman Islands"
+    },
+    {
+      "code": "CF",
+      "alpha3": "CAF",
+      "name": "Central African Republic"
+    },
+    {
+      "code": "TD",
+      "alpha3": "TCD",
+      "name": "Chad"
+    },
+    {
+      "code": "CX",
+      "alpha3": "CXR",
+      "name": "Christmas Island"
+    },
+    {
+      "code": "CC",
+      "alpha3": "CCK",
+      "name": "Cocos (Keeling) Islands"
+    },
+    {
+      "code": "CO",
+      "alpha3": "COL",
+      "name": "Colombia"
+    },
+    {
+      "code": "KM",
+      "alpha3": "COM",
+      "name": "Comoros"
+    },
+    {
+      "code": "CG",
+      "alpha3": "COG",
+      "name": "Congo"
+    },
+    {
+      "code": "CD",
+      "alpha3": "COD",
+      "name": "Congo, The Democratic Republic of the"
+    },
+    {
+      "code": "CK",
+      "alpha3": "COK",
+      "name": "Cook Islands"
+    },
+    {
+      "code": "CR",
+      "alpha3": "CRI",
+      "name": "Costa Rica"
+    },
+    {
+      "code": "CI",
+      "alpha3": "CIV",
+      "name": "Côte d'Ivoire"
+    },
+    {
+      "code": "HR",
+      "alpha3": "HRV",
+      "name": "Croatia"
+    },
+    {
+      "code": "CU",
+      "alpha3": "CUB",
+      "name": "Cuba"
+    },
+    {
+      "code": "CW",
+      "alpha3": "CUW",
+      "name": "Curaçao"
+    },
+    {
+      "code": "CY",
+      "alpha3": "CYP",
+      "name": "Cyprus"
+    },
+    {
+      "code": "DJ",
+      "alpha3": "DJI",
+      "name": "Djibouti"
+    },
+    {
+      "code": "DM",
+      "alpha3": "DMA",
+      "name": "Dominica"
+    },
+    {
+      "code": "DO",
+      "alpha3": "DOM",
+      "name": "Dominican Republic"
+    },
+    {
+      "code": "EC",
+      "alpha3": "ECU",
+      "name": "Ecuador"
+    },
+    {
+      "code": "SV",
+      "alpha3": "SLV",
+      "name": "El Salvador"
+    },
+    {
+      "code": "GQ",
+      "alpha3": "GNQ",
+      "name": "Equatorial Guinea"
+    },
+    {
+      "code": "ER",
+      "alpha3": "ERI",
+      "name": "Eritrea"
+    },
+    {
+      "code": "EE",
+      "alpha3": "EST",
+      "name": "Estonia"
+    },
+    {
+      "code": "SZ",
+      "alpha3": "SWZ",
+      "name": "Eswatini"
+    },
+    {
+      "code": "ET",
+      "alpha3": "ETH",
+      "name": "Ethiopia"
+    },
+    {
+      "code": "FK",
+      "alpha3": "FLK",
+      "name": "Falkland Islands (Malvinas)"
+    },
+    {
+      "code": "FO",
+      "alpha3": "FRO",
+      "name": "Faroe Islands"
+    },
+    {
+      "code": "FJ",
+      "alpha3": "FJI",
+      "name": "Fiji"
+    },
+    {
+      "code": "GF",
+      "alpha3": "GUF",
+      "name": "French Guiana"
+    },
+    {
+      "code": "PF",
+      "alpha3": "PYF",
+      "name": "French Polynesia"
+    },
+    {
+      "code": "TF",
+      "alpha3": "ATF",
+      "name": "French Southern Territories"
+    },
+    {
+      "code": "GA",
+      "alpha3": "GAB",
+      "name": "Gabon"
+    },
+    {
+      "code": "GM",
+      "alpha3": "GMB",
+      "name": "Gambia"
+    },
+    {
+      "code": "GE",
+      "alpha3": "GEO",
+      "name": "Georgia"
+    },
+    {
+      "code": "GH",
+      "alpha3": "GHA",
+      "name": "Ghana"
+    },
+    {
+      "code": "GI",
+      "alpha3": "GIB",
+      "name": "Gibraltar"
+    },
+    {
+      "code": "GL",
+      "alpha3": "GRL",
+      "name": "Greenland"
+    },
+    {
+      "code": "GD",
+      "alpha3": "GRD",
+      "name": "Grenada"
+    },
+    {
+      "code": "GP",
+      "alpha3": "GLP",
+      "name": "Guadeloupe"
+    },
+    {
+      "code": "GU",
+      "alpha3": "GUM",
+      "name": "Guam"
+    },
+    {
+      "code": "GT",
+      "alpha3": "GTM",
+      "name": "Guatemala"
+    },
+    {
+      "code": "GG",
+      "alpha3": "GGY",
+      "name": "Guernsey"
+    },
+    {
+      "code": "GN",
+      "alpha3": "GIN",
+      "name": "Guinea"
+    },
+    {
+      "code": "GW",
+      "alpha3": "GNB",
+      "name": "Guinea-Bissau"
+    },
+    {
+      "code": "GY",
+      "alpha3": "GUY",
+      "name": "Guyana"
+    },
+    {
+      "code": "HT",
+      "alpha3": "HTI",
+      "name": "Haiti"
+    },
+    {
+      "code": "HM",
+      "alpha3": "HMD",
+      "name": "Heard Island and McDonald Islands"
+    },
+    {
+      "code": "VA",
+      "alpha3": "VAT",
+      "name": "Holy See (Vatican City State)"
+    },
+    {
+      "code": "HN",
+      "alpha3": "HND",
+      "name": "Honduras"
+    },
+    {
+      "code": "IS",
+      "alpha3": "ISL",
+      "name": "Iceland"
+    },
+    {
+      "code": "IR",
+      "alpha3": "IRN",
+      "name": "Iran, Islamic Republic of"
+    },
+    {
+      "code": "IQ",
+      "alpha3": "IRQ",
+      "name": "Iraq"
+    },
+    {
+      "code": "IM",
+      "alpha3": "IMN",
+      "name": "Isle of Man"
+    },
+    {
+      "code": "JM",
+      "alpha3": "JAM",
+      "name": "Jamaica"
+    },
+    {
+      "code": "JE",
+      "alpha3": "JEY",
+      "name": "Jersey"
+    },
+    {
+      "code": "JO",
+      "alpha3": "JOR",
+      "name": "Jordan"
+    },
+    {
+      "code": "KZ",
+      "alpha3": "KAZ",
+      "name": "Kazakhstan"
+    },
+    {
+      "code": "KE",
+      "alpha3": "KEN",
+      "name": "Kenya"
+    },
+    {
+      "code": "KI",
+      "alpha3": "KIR",
+      "name": "Kiribati"
+    },
+    {
+      "code": "KP",
+      "alpha3": "PRK",
+      "name": "Korea, Democratic People's Republic of"
+    },
+    {
+      "code": "KW",
+      "alpha3": "KWT",
+      "name": "Kuwait"
+    },
+    {
+      "code": "KG",
+      "alpha3": "KGZ",
+      "name": "Kyrgyzstan"
+    },
+    {
+      "code": "LA",
+      "alpha3": "LAO",
+      "name": "Lao People's Democratic Republic"
+    },
+    {
+      "code": "LV",
+      "alpha3": "LVA",
+      "name": "Latvia"
+    },
+    {
+      "code": "LB",
+      "alpha3": "LBN",
+      "name": "Lebanon"
+    },
+    {
+      "code": "LS",
+      "alpha3": "LSO",
+      "name": "Lesotho"
+    },
+    {
+      "code": "LR",
+      "alpha3": "LBR",
+      "name": "Liberia"
+    },
+    {
+      "code": "LY",
+      "alpha3": "LBY",
+      "name": "Libya"
+    },
+    {
+      "code": "LI",
+      "alpha3": "LIE",
+      "name": "Liechtenstein"
+    },
+    {
+      "code": "LT",
+      "alpha3": "LTU",
+      "name": "Lithuania"
+    },
+    {
+      "code": "MG",
+      "alpha3": "MDG",
+      "name": "Madagascar"
+    },
+    {
+      "code": "MW",
+      "alpha3": "MWI",
+      "name": "Malawi"
+    },
+    {
+      "code": "MV",
+      "alpha3": "MDV",
+      "name": "Maldives"
+    },
+    {
+      "code": "ML",
+      "alpha3": "MLI",
+      "name": "Mali"
+    },
+    {
+      "code": "MT",
+      "alpha3": "MLT",
+      "name": "Malta"
+    },
+    {
+      "code": "MH",
+      "alpha3": "MHL",
+      "name": "Marshall Islands"
+    },
+    {
+      "code": "MQ",
+      "alpha3": "MTQ",
+      "name": "Martinique"
+    },
+    {
+      "code": "MR",
+      "alpha3": "MRT",
+      "name": "Mauritania"
+    },
+    {
+      "code": "MU",
+      "alpha3": "MUS",
+      "name": "Mauritius"
+    },
+    {
+      "code": "YT",
+      "alpha3": "MYT",
+      "name": "Mayotte"
+    },
+    {
+      "code": "FM",
+      "alpha3": "FSM",
+      "name": "Micronesia, Federated States of"
+    },
+    {
+      "code": "MD",
+      "alpha3": "MDA",
+      "name": "Moldova, Republic of"
+    },
+    {
+      "code": "MC",
+      "alpha3": "MCO",
+      "name": "Monaco"
+    },
+    {
+      "code": "MN",
+      "alpha3": "MNG",
+      "name": "Mongolia"
+    },
+    {
+      "code": "ME",
+      "alpha3": "MNE",
+      "name": "Montenegro"
+    },
+    {
+      "code": "MS",
+      "alpha3": "MSR",
+      "name": "Montserrat"
+    },
+    {
+      "code": "MA",
+      "alpha3": "MAR",
+      "name": "Morocco"
+    },
+    {
+      "code": "MZ",
+      "alpha3": "MOZ",
+      "name": "Mozambique"
+    },
+    {
+      "code": "MM",
+      "alpha3": "MMR",
+      "name": "Myanmar"
+    },
+    {
+      "code": "NA",
+      "alpha3": "NAM",
+      "name": "Namibia"
+    },
+    {
+      "code": "NR",
+      "alpha3": "NRU",
+      "name": "Nauru"
+    },
+    {
+      "code": "NP",
+      "alpha3": "NPL",
+      "name": "Nepal"
+    },
+    {
+      "code": "NC",
+      "alpha3": "NCL",
+      "name": "New Caledonia"
+    },
+    {
+      "code": "NI",
+      "alpha3": "NIC",
+      "name": "Nicaragua"
+    },
+    {
+      "code": "NE",
+      "alpha3": "NER",
+      "name": "Niger"
+    },
+    {
+      "code": "NG",
+      "alpha3": "NGA",
+      "name": "Nigeria"
+    },
+    {
+      "code": "NU",
+      "alpha3": "NIU",
+      "name": "Niue"
+    },
+    {
+      "code": "NF",
+      "alpha3": "NFK",
+      "name": "Norfolk Island"
+    },
+    {
+      "code": "MK",
+      "alpha3": "MKD",
+      "name": "North Macedonia"
+    },
+    {
+      "code": "MP",
+      "alpha3": "MNP",
+      "name": "Northern Mariana Islands"
+    },
+    {
+      "code": "OM",
+      "alpha3": "OMN",
+      "name": "Oman"
+    },
+    {
+      "code": "PK",
+      "alpha3": "PAK",
+      "name": "Pakistan"
+    },
+    {
+      "code": "PW",
+      "alpha3": "PLW",
+      "name": "Palau"
+    },
+    {
+      "code": "PS",
+      "alpha3": "PSE",
+      "name": "Palestine, State of"
+    },
+    {
+      "code": "PA",
+      "alpha3": "PAN",
+      "name": "Panama"
+    },
+    {
+      "code": "PG",
+      "alpha3": "PNG",
+      "name": "Papua New Guinea"
+    },
+    {
+      "code": "PY",
+      "alpha3": "PRY",
+      "name": "Paraguay"
+    },
+    {
+      "code": "PE",
+      "alpha3": "PER",
+      "name": "Peru"
+    },
+    {
+      "code": "PN",
+      "alpha3": "PCN",
+      "name": "Pitcairn"
+    },
+    {
+      "code": "PR",
+      "alpha3": "PRI",
+      "name": "Puerto Rico"
+    },
+    {
+      "code": "QA",
+      "alpha3": "QAT",
+      "name": "Qatar"
+    },
+    {
+      "code": "RE",
+      "alpha3": "REU",
+      "name": "Réunion"
+    },
+    {
+      "code": "RW",
+      "alpha3": "RWA",
+      "name": "Rwanda"
+    },
+    {
+      "code": "BL",
+      "alpha3": "BLM",
+      "name": "Saint Barthélemy"
+    },
+    {
+      "code": "SH",
+      "alpha3": "SHN",
+      "name": "Saint Helena, Ascension and Tristan da Cunha"
+    },
+    {
+      "code": "KN",
+      "alpha3": "KNA",
+      "name": "Saint Kitts and Nevis"
+    },
+    {
+      "code": "LC",
+      "alpha3": "LCA",
+      "name": "Saint Lucia"
+    },
+    {
+      "code": "MF",
+      "alpha3": "MAF",
+      "name": "Saint Martin (French part)"
+    },
+    {
+      "code": "PM",
+      "alpha3": "SPM",
+      "name": "Saint Pierre and Miquelon"
+    },
+    {
+      "code": "VC",
+      "alpha3": "VCT",
+      "name": "Saint Vincent and the Grenadines"
+    },
+    {
+      "code": "WS",
+      "alpha3": "WSM",
+      "name": "Samoa"
+    },
+    {
+      "code": "SM",
+      "alpha3": "SMR",
+      "name": "San Marino"
+    },
+    {
+      "code": "ST",
+      "alpha3": "STP",
+      "name": "Sao Tome and Principe"
+    },
+    {
+      "code": "SN",
+      "alpha3": "SEN",
+      "name": "Senegal"
+    },
+    {
+      "code": "RS",
+      "alpha3": "SRB",
+      "name": "Serbia"
+    },
+    {
+      "code": "SC",
+      "alpha3": "SYC",
+      "name": "Seychelles"
+    },
+    {
+      "code": "SL",
+      "alpha3": "SLE",
+      "name": "Sierra Leone"
+    },
+    {
+      "code": "SX",
+      "alpha3": "SXM",
+      "name": "Sint Maarten (Dutch part)"
+    },
+    {
+      "code": "SK",
+      "alpha3": "SVK",
+      "name": "Slovakia"
+    },
+    {
+      "code": "SI",
+      "alpha3": "SVN",
+      "name": "Slovenia"
+    },
+    {
+      "code": "SB",
+      "alpha3": "SLB",
+      "name": "Solomon Islands"
+    },
+    {
+      "code": "SO",
+      "alpha3": "SOM",
+      "name": "Somalia"
+    },
+    {
+      "code": "GS",
+      "alpha3": "SGS",
+      "name": "South Georgia and the South Sandwich Islands"
+    },
+    {
+      "code": "SS",
+      "alpha3": "SSD",
+      "name": "South Sudan"
+    },
+    {
+      "code": "LK",
+      "alpha3": "LKA",
+      "name": "Sri Lanka"
+    },
+    {
+      "code": "SD",
+      "alpha3": "SDN",
+      "name": "Sudan"
+    },
+    {
+      "code": "SR",
+      "alpha3": "SUR",
+      "name": "Suriname"
+    },
+    {
+      "code": "SJ",
+      "alpha3": "SJM",
+      "name": "Svalbard and Jan Mayen"
+    },
+    {
+      "code": "SY",
+      "alpha3": "SYR",
+      "name": "Syrian Arab Republic"
+    },
+    {
+      "code": "TJ",
+      "alpha3": "TJK",
+      "name": "Tajikistan"
+    },
+    {
+      "code": "TZ",
+      "alpha3": "TZA",
+      "name": "Tanzania, United Republic of"
+    },
+    {
+      "code": "TL",
+      "alpha3": "TLS",
+      "name": "Timor-Leste"
+    },
+    {
+      "code": "TG",
+      "alpha3": "TGO",
+      "name": "Togo"
+    },
+    {
+      "code": "TK",
+      "alpha3": "TKL",
+      "name": "Tokelau"
+    },
+    {
+      "code": "TO",
+      "alpha3": "TON",
+      "name": "Tonga"
+    },
+    {
+      "code": "TT",
+      "alpha3": "TTO",
+      "name": "Trinidad and Tobago"
+    },
+    {
+      "code": "TN",
+      "alpha3": "TUN",
+      "name": "Tunisia"
+    },
+    {
+      "code": "TM",
+      "alpha3": "TKM",
+      "name": "Turkmenistan"
+    },
+    {
+      "code": "TC",
+      "alpha3": "TCA",
+      "name": "Turks and Caicos Islands"
+    },
+    {
+      "code": "TV",
+      "alpha3": "TUV",
+      "name": "Tuvalu"
+    },
+    {
+      "code": "UG",
+      "alpha3": "UGA",
+      "name": "Uganda"
+    },
+    {
+      "code": "UM",
+      "alpha3": "UMI",
+      "name": "United States Minor Outlying Islands"
+    },
+    {
+      "code": "UY",
+      "alpha3": "URY",
+      "name": "Uruguay"
+    },
+    {
+      "code": "UZ",
+      "alpha3": "UZB",
+      "name": "Uzbekistan"
+    },
+    {
+      "code": "VU",
+      "alpha3": "VUT",
+      "name": "Vanuatu"
+    },
+    {
+      "code": "VE",
+      "alpha3": "VEN",
+      "name": "Venezuela, Bolivarian Republic of"
+    },
+    {
+      "code": "VG",
+      "alpha3": "VGB",
+      "name": "Virgin Islands, British"
+    },
+    {
+      "code": "VI",
+      "alpha3": "VIR",
+      "name": "Virgin Islands, U.S."
+    },
+    {
+      "code": "WF",
+      "alpha3": "WLF",
+      "name": "Wallis and Futuna"
+    },
+    {
+      "code": "EH",
+      "alpha3": "ESH",
+      "name": "Western Sahara"
+    },
+    {
+      "code": "YE",
+      "alpha3": "YEM",
+      "name": "Yemen"
+    },
+    {
+      "code": "ZM",
+      "alpha3": "ZMB",
+      "name": "Zambia"
+    },
+    {
+      "code": "ZW",
+      "alpha3": "ZWE",
+      "name": "Zimbabwe"
+    },
+    {
+      "code": "CN",
+      "alpha3": "CHN",
+      "name": "China",
+      "label": "中国大陆",
+      "terms": [
+        "中国",
+        "中国大陆",
+        "China",
+        "大陆",
+        "北京",
+        "上海",
+        "广州",
+        "深圳"
+      ]
+    },
+    {
+      "code": "DK",
+      "alpha3": "DNK",
+      "name": "Denmark",
+      "label": "丹麦",
+      "terms": [
+        "丹麦",
+        "Denmark",
+        "Copenhagen",
+        "哥本哈根"
+      ]
+    },
+    {
+      "code": "UA",
+      "alpha3": "UKR",
+      "name": "Ukraine",
+      "label": "乌克兰",
+      "terms": [
+        "乌克兰",
+        "Ukraine",
+        "Kyiv",
+        "基辅"
+      ]
+    },
+    {
+      "code": "IL",
+      "alpha3": "ISR",
+      "name": "Israel",
+      "label": "以色列",
+      "terms": [
+        "以色列",
+        "Israel",
+        "Tel Aviv",
+        "特拉维夫"
+      ]
+    },
+    {
+      "code": "RU",
+      "alpha3": "RUS",
+      "name": "Russian Federation",
+      "label": "俄罗斯",
+      "terms": [
+        "俄罗斯",
+        "Russia",
+        "Russian Federation",
+        "Moscow",
+        "莫斯科"
+      ]
+    },
+    {
+      "code": "HU",
+      "alpha3": "HUN",
+      "name": "Hungary",
+      "label": "匈牙利",
+      "terms": [
+        "匈牙利",
+        "Hungary",
+        "Budapest",
+        "布达佩斯"
+      ]
+    },
+    {
+      "code": "ZA",
+      "alpha3": "ZAF",
+      "name": "South Africa",
+      "label": "南非",
+      "terms": [
+        "南非",
+        "South Africa",
+        "Johannesburg",
+        "约翰内斯堡"
+      ]
+    },
+    {
+      "code": "LU",
+      "alpha3": "LUX",
+      "name": "Luxembourg",
+      "label": "卢森堡",
+      "terms": [
+        "卢森堡",
+        "Luxembourg"
+      ]
+    },
+    {
+      "code": "TR",
+      "alpha3": "TUR",
+      "name": "Türkiye",
+      "label": "土耳其",
+      "terms": [
+        "土耳其",
+        "Turkey",
+        "Türkiye",
+        "Istanbul",
+        "伊斯坦布尔"
+      ]
+    },
+    {
+      "code": "EG",
+      "alpha3": "EGY",
+      "name": "Egypt",
+      "label": "埃及",
+      "terms": [
+        "埃及",
+        "Egypt",
+        "Cairo",
+        "开罗"
+      ]
+    },
+    {
+      "code": "MX",
+      "alpha3": "MEX",
+      "name": "Mexico",
+      "label": "墨西哥",
+      "terms": [
+        "墨西哥",
+        "Mexico",
+        "Mexico City",
+        "墨西哥城"
+      ]
+    },
+    {
+      "code": "AT",
+      "alpha3": "AUT",
+      "name": "Austria",
+      "label": "奥地利",
+      "terms": [
+        "奥地利",
+        "Austria",
+        "Vienna",
+        "维也纳"
+      ]
+    },
+    {
+      "code": "BR",
+      "alpha3": "BRA",
+      "name": "Brazil",
+      "label": "巴西",
+      "terms": [
+        "巴西",
+        "Brazil",
+        "Sao Paulo",
+        "São Paulo",
+        "圣保罗"
+      ]
+    },
+    {
+      "code": "GR",
+      "alpha3": "GRC",
+      "name": "Greece",
+      "label": "希腊",
+      "terms": [
+        "希腊",
+        "Greece",
+        "Athens",
+        "雅典"
+      ]
+    },
+    {
+      "code": "IT",
+      "alpha3": "ITA",
+      "name": "Italy",
+      "label": "意大利",
+      "terms": [
+        "意大利",
+        "Italy",
+        "Milan",
+        "米兰",
+        "Rome",
+        "罗马"
+      ]
+    },
+    {
+      "code": "NO",
+      "alpha3": "NOR",
+      "name": "Norway",
+      "label": "挪威",
+      "terms": [
+        "挪威",
+        "Norway",
+        "Oslo",
+        "奥斯陆"
+      ]
+    },
+    {
+      "code": "CZ",
+      "alpha3": "CZE",
+      "name": "Czechia",
+      "label": "捷克",
+      "terms": [
+        "捷克",
+        "Czechia",
+        "Czech Republic",
+        "Prague",
+        "布拉格"
+      ]
+    },
+    {
+      "code": "CL",
+      "alpha3": "CHL",
+      "name": "Chile",
+      "label": "智利",
+      "terms": [
+        "智利",
+        "Chile",
+        "Santiago",
+        "圣地亚哥"
+      ]
+    },
+    {
+      "code": "KH",
+      "alpha3": "KHM",
+      "name": "Cambodia",
+      "label": "柬埔寨",
+      "terms": [
+        "柬埔寨",
+        "Cambodia",
+        "Phnom Penh",
+        "金边"
+      ]
+    },
+    {
+      "code": "BE",
+      "alpha3": "BEL",
+      "name": "Belgium",
+      "label": "比利时",
+      "terms": [
+        "比利时",
+        "Belgium",
+        "Brussels",
+        "布鲁塞尔"
+      ]
+    },
+    {
+      "code": "SA",
+      "alpha3": "SAU",
+      "name": "Saudi Arabia",
+      "label": "沙特阿拉伯",
+      "terms": [
+        "沙特阿拉伯",
+        "沙特",
+        "Saudi Arabia",
+        "Riyadh",
+        "利雅得"
+      ]
+    },
+    {
+      "code": "PL",
+      "alpha3": "POL",
+      "name": "Poland",
+      "label": "波兰",
+      "terms": [
+        "波兰",
+        "Poland",
+        "Warsaw",
+        "华沙"
+      ]
+    },
+    {
+      "code": "MO",
+      "alpha3": "MAC",
+      "name": "Macao",
+      "label": "澳门",
+      "terms": [
+        "澳门",
+        "Macao",
+        "Macau"
+      ]
+    },
+    {
+      "code": "IE",
+      "alpha3": "IRL",
+      "name": "Ireland",
+      "label": "爱尔兰",
+      "terms": [
+        "爱尔兰",
+        "Ireland",
+        "Dublin",
+        "都柏林"
+      ]
+    },
+    {
+      "code": "SE",
+      "alpha3": "SWE",
+      "name": "Sweden",
+      "label": "瑞典",
+      "terms": [
+        "瑞典",
+        "Sweden",
+        "Stockholm",
+        "斯德哥尔摩"
+      ]
+    },
+    {
+      "code": "XK",
+      "alpha3": "XKX",
+      "name": "Kosovo",
+      "label": "科索沃",
+      "terms": [
+        "科索沃",
+        "Kosovo"
+      ]
+    },
+    {
+      "code": "RO",
+      "alpha3": "ROU",
+      "name": "Romania",
+      "label": "罗马尼亚",
+      "terms": [
+        "罗马尼亚",
+        "Romania",
+        "Bucharest",
+        "布加勒斯特"
+      ]
+    },
+    {
+      "code": "FI",
+      "alpha3": "FIN",
+      "name": "Finland",
+      "label": "芬兰",
+      "terms": [
+        "芬兰",
+        "Finland",
+        "Helsinki",
+        "赫尔辛基"
+      ]
+    },
+    {
+      "code": "PT",
+      "alpha3": "PRT",
+      "name": "Portugal",
+      "label": "葡萄牙",
+      "terms": [
+        "葡萄牙",
+        "Portugal",
+        "Lisbon",
+        "里斯本"
+      ]
+    },
+    {
+      "code": "ES",
+      "alpha3": "ESP",
+      "name": "Spain",
+      "label": "西班牙",
+      "terms": [
+        "西班牙",
+        "Spain",
+        "Madrid",
+        "马德里"
+      ]
+    },
+    {
+      "code": "AR",
+      "alpha3": "ARG",
+      "name": "Argentina",
+      "label": "阿根廷",
+      "terms": [
+        "阿根廷",
+        "Argentina",
+        "Buenos Aires",
+        "布宜诺斯艾利斯"
+      ]
+    }
+  ]
+}
