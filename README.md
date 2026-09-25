@@ -94,11 +94,7 @@ YouTube / Netflix / 国外媒体的独立策略组
 | 其他海外社交 / GitHub / GitLab / Docker / Cloudflare / Google / Dropbox / Speedtest / Global Proxy | `🌐 国外网站` |
 | 国内 App / China / LAN / Download / PT / SteamCN / BiliBili | `DIRECT` |
 
-普通未命中的流量：
-
-```text
-FINAL,🌐 国外网站
-```
+发布配置不再写入显式 `FINAL` 规则。只有命中现有本地/远程规则的流量才会被这些策略映射处理。
 
 ## 广告规则
 
@@ -149,7 +145,7 @@ rules/
 - 每天北京时间 02:23 自动更新。
 - 大规则集异常骤降会阻止发布。
 - 关键域名有语义测试。
-- 渲染器强制发布配置只能存在 6 个可见策略组、1 个 `url-test` 和 1 个 `全球节点` Remote Filter；任何地区手动/地区时延策略或空国家 Filter 都会让构建失败。
+- 渲染器强制发布配置只能存在 6 个可见策略组、1 个 `url-test` 和 1 个 `全球节点` Remote Filter，并禁止显式 `FINAL`；任何地区手动/地区时延策略或空国家 Filter 都会让构建失败。
 
 ## 手工纠错
 
