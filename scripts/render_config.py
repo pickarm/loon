@@ -220,6 +220,13 @@ def validate_template_policy_groups() -> None:
     if auto is None or not auto.startswith("url-test,全球节点"):
         raise ValueError("♻️ 全局优选 must be the single global url-test over 全球节点")
 
+    url_test_groups = re.findall(r"(?m)^([^#\n=]+?)\s*=\s*url-test,", TEMPLATE)
+    if url_test_groups != ["♻️ 全局优选"]:
+        raise ValueError(
+            "template must contain exactly one url-test group: ♻️ 全局优选; got "
+            + ", ".join(url_test_groups)
+        )
+
     if re.search(r"(?m)^.*(?:时延优选|手动策略)\s*=", TEMPLATE):
         raise ValueError("template still defines regional manual/latency policy groups")
 
