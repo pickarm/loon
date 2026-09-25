@@ -113,6 +113,9 @@ RULE_TYPE_ORDER = {
     "IP-CIDR6": 14,
     "GEOIP": 15,
     "RULE-SET": 16,
+    "AND": 17,
+    "OR": 18,
+    "NOT": 19,
 }
 
 RAW_GITHUB = re.compile(
