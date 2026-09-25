@@ -219,6 +219,23 @@ def validate_template_policy_groups() -> None:
     if "udp=true,block-quic=false" not in TEMPLATE:
         raise ValueError("Remote Proxy example must force UDP on and leave QUIC unblocked")
 
+    if "bootstrap config" not in TEMPLATE or "DO NOT refresh/replace this whole" not in TEMPLATE:
+        raise ValueError("published full config must carry the bootstrap-only safety warning")
+
+    remote_proxy_match = re.search(r"(?s)\[Remote Proxy\]\n(.*?)\n\[Remote Filter\]", TEMPLATE)
+    if not remote_proxy_match:
+        raise ValueError("Loon template is missing Remote Proxy block")
+    active_remote_proxy_lines = [
+        line.strip()
+        for line in remote_proxy_match.group(1).splitlines()
+        if line.strip() and not line.lstrip().startswith(("#", ";", "//"))
+    ]
+    if active_remote_proxy_lines:
+        raise ValueError(
+            "public bootstrap config must never contain a real Remote Proxy subscription: "
+            + " | ".join(active_remote_proxy_lines)
+        )
+
 
 def file_rules(path: Path) -> set[str]:
     rules: set[str] = set()
