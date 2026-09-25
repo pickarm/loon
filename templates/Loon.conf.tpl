@@ -1,5 +1,10 @@
-# pickarm/loon generated config
+# pickarm/loon bootstrap config
 # Variant: {{CONFIG_VARIANT}}
+# IMPORTANT: this full config is for initial setup / rebuilding a profile only.
+# After adding a private [Remote Proxy] subscription, DO NOT refresh/replace this whole
+# remote config from GitHub: a full-config refresh can replace the local [Remote Proxy]
+# section and remove your private node subscription.
+# Ongoing updates should refresh node subscriptions, Remote Rule resources and plugins.
 # Rules are generated from multiple upstream projects. Do not put private subscription URLs or MITM certificates in this public template.
 
 [General]
@@ -30,7 +35,9 @@ bypass-tun = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,1
 [Proxy]
 
 [Remote Proxy]
-# 在 Loon 中添加你自己的订阅；公共模板不会保存私人订阅 URL。
+# 私人区：首次导入后在 Loon 本地添加自己的节点订阅。
+# 不要通过“更新整份远程配置”来更新本仓库，否则这一段会被公共模板覆盖为空。
+# 日常只更新节点订阅 / Remote Rule / Plugin 资源。
 # 本配置按 VLESS/TCP/REALITY 的 UDP-over-VLESS 使用方式设计：
 # udp=true 会覆盖订阅节点默认的 UDP=false；block-quic=false 允许 QUIC、STUN、语音等 UDP 进入 VLESS 隧道。
 # 示例（不要直接使用）：sub = https://example.com/your-subscription,udp=true,block-quic=false,skip-cert-verify=false,enabled=true
