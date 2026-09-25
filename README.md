@@ -4,17 +4,43 @@
 
 当前生成 **61 个细粒度规则集**。规则可以继续增加，但 Loon 用户可见策略保持精简：**规则细、组少、业务组里直接选具体节点**。
 
-## 🚀 直接使用
+## 🚀 首次安装 / 重建配置
 
-| 版本 | 推荐场景 | 配置地址 |
+下面三个地址是 **bootstrap 模板**，用于第一次建立 Loon 配置，或者需要重建整个 profile 时使用；它们不再作为日常“整份配置更新”入口。
+
+| 版本 | 首次安装场景 | 配置地址 |
 |---|---|---|
 | 🇨🇳 **Loon-CN.conf** | 中国大陆，默认推荐 | `https://cdn.jsdelivr.net/gh/pickarm/loon@release/config/Loon-CN.conf` |
 | 🌐 **Loon.conf** | GitHub Raw 可直连 | `https://raw.githubusercontent.com/pickarm/loon/release/config/Loon.conf` |
 | 🚀 **Loon-Proxy.conf** | GitHub Raw 不稳定时 | `https://githubproxy.cc/https://raw.githubusercontent.com/pickarm/loon/release/config/Loon-Proxy.conf` |
 
-`Loon-CN.conf` 会同时把规则、Sub-Store parser、策略图标等 GitHub Raw 依赖改写为 jsDelivr。
+`Loon-CN.conf` 会同时把规则、Sub-Store parser 等 GitHub Raw 依赖改写为 jsDelivr。
 
-> 公共配置不会保存私人订阅 URL、MITM CA、证书或密码。导入后请在 Loon 中添加自己的节点订阅。
+> 公共模板永远不会保存私人订阅 URL、MITM CA、证书或密码。首次导入后，请在 Loon 本地添加自己的节点订阅。
+
+## 🔒 安全更新：不再覆盖私人节点
+
+Loon 把节点订阅放在主配置的 `[Remote Proxy]` 中。公共仓库不能保存你的私人订阅 URL，因此如果以后再次用 GitHub 的 bootstrap 地址刷新/替换**整份主配置**，公共模板中的空 `[Remote Proxy]` 就可能覆盖你本地已经添加的订阅。
+
+以后按两层使用：
+
+```text
+本地主配置（长期保留）
+├── [Remote Proxy]     ← 你的私人节点订阅
+├── [Remote Filter]    ← 全球节点
+├── [Proxy Group]      ← 6 个策略组
+└── [General]          ← UDP / DNS 等设置
+
+远程资源（持续更新）
+├── [Remote Rule]      ← 本仓库 release/rules/*
+└── [Plugin]           ← 各插件自己的远程资源
+```
+
+**日常更新时只刷新：节点订阅、Remote Rule、Plugin。不要再刷新/替换整份 GitHub bootstrap 配置。**
+
+规则内容本来就是通过 `[Remote Rule]` 引用 `release/rules/*`，所以仓库每日更新规则时，不需要替换主配置，也不会碰你的 `[Remote Proxy]`。
+
+如果以后本仓库修改的是 `[General]`、`[Proxy Group]` 这类“主配置结构”，README 会明确标成需要手动迁移/重建；这种结构升级不会伪装成普通规则更新。
 
 ## VLESS UDP-over-TCP
 
@@ -182,6 +208,8 @@ rules/
 - `AND / OR / NOT` 逻辑规则会原样保留；发现未知规则类型时构建直接失败，不再静默丢规则。
 - ChatGPT 的 Azure WebPubSub / Azure Front Door 动态后端规则有独立语义校验。
 - 渲染器强制发布配置只能存在 6 个可见策略组、1 个 `url-test` 和 1 个 `全球节点` Remote Filter，并禁止显式 `FINAL`；任何地区手动/地区时延策略或空国家 Filter 都会让构建失败。
+- 公共 bootstrap 配置的 `[Remote Proxy]` 必须保持为空且只能包含说明注释；CI 会拒绝任何真实订阅 URL，避免把私人节点写进仓库。
+- 发布配置必须携带“bootstrap only”安全提示，防止把整份远程配置当作日常更新资源。
 
 ## 手工纠错
 
