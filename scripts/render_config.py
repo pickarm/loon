@@ -155,7 +155,7 @@ def render_country_filters() -> str:
         seen.add(code)
 
         alpha3 = item.get("alpha3", "").upper()
-        label = item.get("label") or item.get("name") or code
+        label = item.get("label") or code
         terms = [flag_emoji(code)]
         for value in item.get("terms", []):
             if value and value not in terms:
