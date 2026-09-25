@@ -152,6 +152,12 @@ def normalize_rule(line: str, fmt: str = "rule") -> str | None:
     raw_type, rest = line.split(",", 1)
     rtype = raw_type.strip().upper()
 
+    # Upstream full-config lists may contain a terminal FINAL rule. Remote
+    # rule bundles must never import that catch-all, and this project
+    # intentionally publishes no explicit FINAL.
+    if rtype == "FINAL":
+        return None
+
     if rtype in LOGICAL_RULE_TYPES:
         rest = rest.strip()
         if not rest.startswith("(") or not rest.endswith(")"):
