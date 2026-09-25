@@ -34,38 +34,23 @@ bypass-tun = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,1
 # 示例（不要直接使用）：sub = https://example.com/your-subscription,udp=true,block-quic=true,skip-cert-verify=false,enabled=true
 
 [Remote Filter]
-# 国家/地区筛选仅用于节点分类，不再生成地区手动/地区优选策略卡片。
-# 目录覆盖 ISO 3166-1 国家/地区并额外包含 XK（Kosovo）；空筛选不会进入业务策略组。
-{{COUNTRY_FILTERS}}
-
-# 特殊分类
-游戏节点 = NameRegex, FilterKey = "^(?=.*((?i)游戏|🎮|(\b(GAME)(\d+)?\b)))(?!.*((?i)回国|校园)).*$"
+# 发布配置只保留一个全局节点筛选。国家目录保留在仓库数据中，不渲染为空地区对象。
 全球节点 = NameRegex, FilterKey = "^(?=.*(.))(?!.*((?i)群|邀请|返利|官网|客服|网址|订阅|流量|到期|机场|过期|已用|通知|国内|频道|教程|更新|作者|邮箱|(\b(USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author|Traffic)(\d+)?\b))).*$"
 
 [Proxy Group]
-# ---------------- 唯一自动优选 ----------------
-# 只保留一个全局 url-test；不再按国家/地区生成时延优选组。
+# 只有一个自动测速组。
 ♻️ 全局优选 = url-test,全球节点,url = http://www.gstatic.com/generate_204,interval = 300,tolerance = 50
 
-# ---------------- 默认兜底 ----------------
-# select 直接引用全球节点 Filter，因此可以在 Loon 中手动选择任意明细节点。
-兜底后备策略 = select,♻️ 全局优选,全球节点,DIRECT
-
-# ---------------- 业务策略 ----------------
-# 每个业务组都同时提供“全局优选”和全部实际节点；地区 Filter 不作为中间策略项出现。
+# 业务组全部可以直接展开 全球节点 里的明细节点进行手动选择。
+🌐 国外网站 = select,♻️ 全局优选,全球节点,DIRECT
 🤖 AI平台 = select,♻️ 全局优选,全球节点,DIRECT
 📲 电报消息 = select,♻️ 全局优选,全球节点,DIRECT
-📹 油管视频 = select,♻️ 全局优选,全球节点,DIRECT
-🎥 奈飞视频 = select,♻️ 全局优选,全球节点,DIRECT
-🌍 国外媒体 = select,♻️ 全局优选,全球节点,DIRECT
-Ⓜ️ 微软服务 = select,DIRECT,♻️ 全局优选,全球节点
-🍎 苹果服务 = select,DIRECT,♻️ 全局优选,全球节点
-🎮 游戏平台 = select,DIRECT,♻️ 全局优选,全球节点
+🎬 流媒体 = select,♻️ 全局优选,全球节点,DIRECT
 💳 金融平台 = select,♻️ 全局优选,全球节点,DIRECT
 
 [Rule]
 GEOIP,CN,DIRECT
-FINAL,兜底后备策略
+FINAL,🌐 国外网站
 
 [Remote Rule]
 {{REMOTE_RULES}}
@@ -84,12 +69,12 @@ https://kelee.one/Tool/Loon/Lpx/AppleWeatherEnhancer.lpx, enabled=true
 https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx, pin=true, enabled=true
 https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx, pin=true, enabled=true
 https://kelee.one/Tool/Loon/Lpx/QuickSearch.lpx, enabled=true
-https://kelee.one/Tool/Loon/Lpx/Prevent_DNS_Leaks.lpx, policy=兜底后备策略, enabled=true
+https://kelee.one/Tool/Loon/Lpx/Prevent_DNS_Leaks.lpx, policy=🌐 国外网站, enabled=true
 https://kelee.one/Tool/Loon/Lpx/Node_detection_tool.lpx, enabled=true
 https://kelee.one/Tool/Loon/Lpx/TestFlightRegionUnlock.lpx, policy=DIRECT, enabled=false
-https://kelee.one/Tool/Loon/Lpx/BoxJs.lpx, policy=兜底后备策略, enabled=true
-https://kelee.one/Tool/Loon/Lpx/Sub-Store.lpx, policy=兜底后备策略, enabled=true
-https://kelee.one/Tool/Loon/Lpx/Script-Hub.lpx, policy=兜底后备策略, enabled=true
+https://kelee.one/Tool/Loon/Lpx/BoxJs.lpx, policy=🌐 国外网站, enabled=true
+https://kelee.one/Tool/Loon/Lpx/Sub-Store.lpx, policy=🌐 国外网站, enabled=true
+https://kelee.one/Tool/Loon/Lpx/Script-Hub.lpx, policy=🌐 国外网站, enabled=true
 
 [Mitm]
 # 公共模板故意不包含 CA、密码或私人证书。
