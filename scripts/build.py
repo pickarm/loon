@@ -19,7 +19,8 @@ RULE_DIR = ROOT / "rules"
 REPORT_DIR = ROOT / "build"
 CONFIG_PATH = ROOT / "sources" / "sources.json"
 PREVIOUS_REPORT = ROOT / ".previous-report.json"
-RULE_TYPES = {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD", "DOMAIN-WILDCARD", "IP-CIDR", "IP-CIDR6", "IP-ASN", "GEOIP", "PROCESS-NAME", "PROCESS-PATH", "USER-AGENT", "URL-REGEX", "PROTOCOL", "DST-PORT", "SRC-PORT", "SRC-IP", "RULE-SET"}
+RULE_TYPES = {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD", "DOMAIN-WILDCARD", "IP-CIDR", "IP-CIDR6", "IP-ASN", "GEOIP", "PROCESS-NAME", "PROCESS-PATH", "USER-AGENT", "URL-REGEX", "PROTOCOL", "DST-PORT", "DEST-PORT", "SRC-PORT", "SRC-IP", "RULE-SET"}
+LOGICAL_RULE_TYPES = {"AND", "OR", "NOT"}
 DOMAIN_TYPES = {"DOMAIN", "DOMAIN-SUFFIX"}
 FETCH_CACHE: dict[str, str] = {}
 NOT_FOUND: set[str] = set()
@@ -139,18 +140,59 @@ def normalize_rule(line: str, fmt: str = "rule") -> str | None:
     if fmt == "domain":
         value = clean_domain(line.split()[0])
         return f"DOMAIN-SUFFIX,{value}" if value and not value.startswith(("!", "@@", "||")) else None
+
     line = line.strip("'\"")
-    parts = [p.strip() for p in line.split(",")]
-    if len(parts) < 2:
-        return f"DOMAIN-SUFFIX,{clean_domain(line)}" if re.fullmatch(r"[A-Za-z0-9._*-]+\.[A-Za-z0-9.-]+", line) else None
-    rtype = parts[0].upper()
-    if rtype not in RULE_TYPES:
+    if "," not in line:
+        return (
+            f"DOMAIN-SUFFIX,{clean_domain(line)}"
+            if re.fullmatch(r"[A-Za-z0-9._*-]+\.[A-Za-z0-9.-]+", line)
+            else None
+        )
+
+    raw_type, rest = line.split(",", 1)
+    rtype = raw_type.strip().upper()
+
+    # Upstream full-config lists may contain a terminal FINAL rule. Remote
+    # rule bundles must never import that catch-all, and this project
+    # intentionally publishes no explicit FINAL.
+    if rtype == "FINAL":
         return None
-    value = clean_domain(parts[1]) if rtype in DOMAIN_TYPES | {"DOMAIN-KEYWORD", "DOMAIN-WILDCARD"} else parts[1]
+
+    if rtype in LOGICAL_RULE_TYPES:
+        rest = rest.strip()
+        if not rest.startswith("(") or not rest.endswith(")"):
+            raise ValueError(f"malformed logical rule: {line}")
+
+        nested_types = {
+            match.upper()
+            for match in re.findall(r"\(([A-Za-z][A-Za-z0-9-]*)\s*,", rest)
+        }
+        unsupported_nested = sorted(
+            nested_types - RULE_TYPES - LOGICAL_RULE_TYPES
+        )
+        if unsupported_nested:
+            raise ValueError(
+                f"unsupported nested rule type(s) {unsupported_nested}: {line}"
+            )
+        return f"{rtype},{rest}"
+
+    if rtype not in RULE_TYPES:
+        if re.fullmatch(r"[A-Z][A-Z0-9-]*", rtype):
+            raise ValueError(f"unsupported rule type {rtype}: {line}")
+        return None
+
+    parts = [p.strip() for p in line.split(",")]
+    value = (
+        clean_domain(parts[1])
+        if rtype in DOMAIN_TYPES | {"DOMAIN-KEYWORD", "DOMAIN-WILDCARD"}
+        else parts[1]
+    )
     if not value:
         return None
     out = f"{rtype},{value}"
-    if rtype in {"IP-CIDR", "IP-CIDR6", "IP-ASN"} and any(p.lower() == "no-resolve" for p in parts[2:]):
+    if rtype in {"IP-CIDR", "IP-CIDR6", "IP-ASN"} and any(
+        p.lower() == "no-resolve" for p in parts[2:]
+    ):
         out += ",no-resolve"
     return out
 
@@ -175,7 +217,14 @@ def read_source(cfg: dict, repo_key: str, candidates: list[str], fmt: str, requi
                 raise
             print(f"[warn] optional source unavailable: {repo_key}:{path}: {exc}", flush=True)
             return set(), None, None
-        rules = {r for line in text.splitlines() if (r := normalize_rule(line, fmt))}
+        rules: set[str] = set()
+        for line_no, line in enumerate(text.splitlines(), start=1):
+            try:
+                rule = normalize_rule(line, fmt)
+            except ValueError as exc:
+                raise ValueError(f"{repo_key}:{path}:{line_no}: {exc}") from exc
+            if rule:
+                rules.add(rule)
         digest = hashlib.sha256(text.encode("utf-8", errors="ignore")).hexdigest()[:16]
         return rules, path, digest
     if required:
@@ -187,7 +236,19 @@ def read_override(name: str) -> set[str]:
     path = ROOT / "override" / name
     if not path.exists():
         return set()
-    return {r for line in path.read_text(encoding="utf-8", errors="ignore").splitlines() if (r := normalize_rule(line))}
+
+    rules: set[str] = set()
+    for line_no, line in enumerate(
+        path.read_text(encoding="utf-8", errors="ignore").splitlines(),
+        start=1,
+    ):
+        try:
+            rule = normalize_rule(line)
+        except ValueError as exc:
+            raise ValueError(f"override/{name}:{line_no}: {exc}") from exc
+        if rule:
+            rules.add(rule)
+    return rules
 
 
 def split_rule(rule: str) -> tuple[str, str]:
@@ -239,6 +300,11 @@ def validate_expectations(built):
         for domain in domains:
             if not domain_matches(built.get(path, set()), domain):
                 errors.append(f"expected {domain} missing from {path}")
+    for path, rules in checks.get("exact_rules", {}).items():
+        available = built.get(path, set())
+        for rule in rules:
+            if rule not in available:
+                errors.append(f"expected exact rule missing from {path}: {rule}")
     return errors
 
 

@@ -30,6 +30,9 @@ RULE_TYPE_ORDER = {
     "IP-CIDR6": 14,
     "GEOIP": 15,
     "RULE-SET": 16,
+    "AND": 17,
+    "OR": 18,
+    "NOT": 19,
 }
 
 
@@ -112,6 +115,8 @@ def main() -> None:
         "DOMAIN,cdn.workos.com",
         "DOMAIN-SUFFIX,oaistatsig.com",
         "DOMAIN,ios.chat.openai.com",
+        "AND,((DOMAIN-KEYWORD, chatgpt-async-webps-prod-), (DOMAIN-SUFFIX, webpubsub.azure.com))",
+        "AND,((DOMAIN-KEYWORD, openaicom-api-), (DOMAIN-SUFFIX, azurefd.net))",
     }
     # ios.chat.openai.com is covered by DOMAIN-SUFFIX,openai.com even when an exact
     # DOMAIN line is not present. Check it semantically rather than requiring a duplicate.
