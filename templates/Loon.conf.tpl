@@ -34,33 +34,34 @@ bypass-tun = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,1
 # 示例（不要直接使用）：sub = https://example.com/your-subscription,udp=true,block-quic=true,skip-cert-verify=false,enabled=true
 
 [Remote Filter]
-# Filter 直接作为业务 select 的节点来源，不再建立“地区手动/地区优选”中间组。
-# 某个地区没有节点时，该 Filter 贡献 0 个节点，因此不会在业务组里形成空的二级策略项。
-香港节点 = NameRegex, FilterKey = "^(?=.*((?i)🇭🇰|香港|(\b(HK|HKG|Hong)(\d+)?\b)))(?!.*((?i)回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
-台湾节点 = NameRegex, FilterKey = "^(?=.*((?i)🇹🇼|台湾|(\b(TW|TWN|Tai|Taiwan)(\d+)?\b)))(?!.*((?i)回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
-日本节点 = NameRegex, FilterKey = "^(?=.*((?i)🇯🇵|日本|东京|大阪|(\b(JP|JPN|Japan)(\d+)?\b)))(?!.*((?i)回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
-韩国节点 = NameRegex, FilterKey = "^(?=.*((?i)🇰🇷|韩国|韓|首尔|(\b(KR|KOR|Korea)(\d+)?\b)))(?!.*((?i)回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
-新加坡节点 = NameRegex, FilterKey = "^(?=.*((?i)🇸🇬|新加坡|狮城|(\b(SG|SGP|Singapore)(\d+)?\b)))(?!.*((?i)回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
-美国节点 = NameRegex, FilterKey = "^(?=.*((?i)🇺🇸|美国|洛杉矶|圣何塞|西雅图|达拉斯|芝加哥|(\b(US|USA|United States)(\d+)?\b)))(?!.*((?i)回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
+# 国家/地区筛选仅用于节点分类，不再生成地区手动/地区优选策略卡片。
+# 目录覆盖 ISO 3166-1 国家/地区并额外包含 XK（Kosovo）；空筛选不会进入业务策略组。
+{{COUNTRY_FILTERS}}
+
+# 特殊分类
 游戏节点 = NameRegex, FilterKey = "^(?=.*((?i)游戏|🎮|(\b(GAME)(\d+)?\b)))(?!.*((?i)回国|校园)).*$"
 全球节点 = NameRegex, FilterKey = "^(?=.*(.))(?!.*((?i)群|邀请|返利|官网|客服|网址|订阅|流量|到期|机场|过期|已用|通知|国内|频道|教程|更新|作者|邮箱|(\b(USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author|Traffic)(\d+)?\b))).*$"
 
 [Proxy Group]
-# ---------------- 默认兜底 ----------------
-# 兜底直接引用地区 Filter：优先香港，其后台湾、日本、新加坡、美国、韩国，最后使用全局节点。
-兜底后备策略 = fallback,香港节点,台湾节点,日本节点,新加坡节点,美国节点,韩国节点,全球节点,DIRECT,interval = 300,max-timeout = 3000,img-url = https://github.com/shindgewongxj/WHATSINStash/raw/main/icon/fallback.png
+# ---------------- 唯一自动优选 ----------------
+# 只保留一个全局 url-test；不再按国家/地区生成时延优选组。
+♻️ 全局优选 = url-test,全球节点,url = http://www.gstatic.com/generate_204,interval = 300,tolerance = 50
 
-# ---------------- 精简业务策略 ----------------
-# Filter 会展开为实际节点；点进业务组后直接选择节点，不再经过“美国手动策略/美国时延优选”等二级组。
-🤖 AI平台 = select,美国节点,新加坡节点,日本节点,香港节点,台湾节点,韩国节点,兜底后备策略,DIRECT
-📲 电报消息 = select,新加坡节点,香港节点,日本节点,台湾节点,美国节点,韩国节点,兜底后备策略,DIRECT
-📹 油管视频 = select,香港节点,台湾节点,日本节点,新加坡节点,美国节点,韩国节点,兜底后备策略,DIRECT
-🎥 奈飞视频 = select,香港节点,台湾节点,日本节点,新加坡节点,美国节点,韩国节点,兜底后备策略,DIRECT
-🌍 国外媒体 = select,香港节点,台湾节点,日本节点,新加坡节点,美国节点,韩国节点,兜底后备策略,DIRECT
-Ⓜ️ 微软服务 = select,DIRECT,香港节点,台湾节点,日本节点,新加坡节点,美国节点,韩国节点,兜底后备策略
-🍎 苹果服务 = select,DIRECT,香港节点,台湾节点,日本节点,新加坡节点,美国节点,韩国节点,兜底后备策略
-🎮 游戏平台 = select,DIRECT,游戏节点,香港节点,台湾节点,日本节点,新加坡节点,美国节点,韩国节点,兜底后备策略
-💳 金融平台 = select,美国节点,新加坡节点,日本节点,香港节点,台湾节点,韩国节点,兜底后备策略,DIRECT
+# ---------------- 默认兜底 ----------------
+# select 直接引用全球节点 Filter，因此可以在 Loon 中手动选择任意明细节点。
+兜底后备策略 = select,♻️ 全局优选,全球节点,DIRECT
+
+# ---------------- 业务策略 ----------------
+# 每个业务组都同时提供“全局优选”和全部实际节点；地区 Filter 不作为中间策略项出现。
+🤖 AI平台 = select,♻️ 全局优选,全球节点,DIRECT
+📲 电报消息 = select,♻️ 全局优选,全球节点,DIRECT
+📹 油管视频 = select,♻️ 全局优选,全球节点,DIRECT
+🎥 奈飞视频 = select,♻️ 全局优选,全球节点,DIRECT
+🌍 国外媒体 = select,♻️ 全局优选,全球节点,DIRECT
+Ⓜ️ 微软服务 = select,DIRECT,♻️ 全局优选,全球节点
+🍎 苹果服务 = select,DIRECT,♻️ 全局优选,全球节点
+🎮 游戏平台 = select,DIRECT,♻️ 全局优选,全球节点
+💳 金融平台 = select,♻️ 全局优选,全球节点,DIRECT
 
 [Rule]
 GEOIP,CN,DIRECT
