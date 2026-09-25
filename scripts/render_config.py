@@ -9,7 +9,6 @@ ROOT = Path(__file__).resolve().parents[1]
 RULE_DIR = ROOT / "rules"
 CFG = json.loads((ROOT / "sources" / "sources.json").read_text(encoding="utf-8"))
 TEMPLATE = (ROOT / "templates" / "Loon.conf.tpl").read_text(encoding="utf-8")
-COUNTRY_CATALOG = json.loads((ROOT / "sources" / "countries.json").read_text(encoding="utf-8"))
 
 FLAVORS = {
     "Loon.conf": {
@@ -37,40 +36,35 @@ POLICY_ALIASES = {
     "🤖 Gemini": "🤖 AI平台",
     "🤖 Copilot": "🤖 AI平台",
     "💬 Telegram": "📲 电报消息",
-    "💬 社交通讯": "兜底后备策略",
-    "📺 YouTube": "📹 油管视频",
-    "🎬 Netflix": "🎥 奈飞视频",
-    "🎬 流媒体": "🌍 国外媒体",
-    "🎵 Spotify": "🌍 国外媒体",
-    "🎵 TikTok": "🌍 国外媒体",
-    "🧑‍💻 GitHub": "兜底后备策略",
-    "🧑‍💻 开发服务": "兜底后备策略",
-    "☁️ 云存储": "兜底后备策略",
-    "🔍 Google": "兜底后备策略",
-    "Ⓜ️ Microsoft": "Ⓜ️ 微软服务",
-    "🍎 Apple": "🍎 苹果服务",
+    "💬 社交通讯": "🌐 国外网站",
+    "📺 YouTube": "🎬 流媒体",
+    "🎬 Netflix": "🎬 流媒体",
+    "🎬 流媒体": "🎬 流媒体",
+    "🎵 Spotify": "🎬 流媒体",
+    "🎵 TikTok": "🎬 流媒体",
+    "🧑‍💻 GitHub": "🌐 国外网站",
+    "🧑‍💻 开发服务": "🌐 国外网站",
+    "☁️ 云存储": "🌐 国外网站",
+    "🔍 Google": "🌐 国外网站",
+    "Ⓜ️ Microsoft": "DIRECT",
+    "🍎 Apple": "DIRECT",
     "💳 金融支付": "💳 金融平台",
-    "🎮 游戏平台": "🎮 游戏平台",
-    "🌍 国外网站": "兜底后备策略",
+    "🎮 游戏平台": "DIRECT",
+    "🌍 国外网站": "🌐 国外网站",
 }
 
 RULESET_POLICY_OVERRIDES = {
-    "OneDrive": "Ⓜ️ 微软服务",
+    "OneDrive": "DIRECT",
 }
 
 VISIBLE_SERVICE_POLICIES = {
+    "🌐 国外网站",
     "🤖 AI平台",
     "📲 电报消息",
-    "📹 油管视频",
-    "🎥 奈飞视频",
-    "🌍 国外媒体",
-    "Ⓜ️ 微软服务",
-    "🍎 苹果服务",
-    "🎮 游戏平台",
+    "🎬 流媒体",
     "💳 金融平台",
 }
-SPECIAL_POLICIES = {"兜底后备策略"}
-ALLOWED_OUTPUT_POLICIES = {"DIRECT"} | VISIBLE_SERVICE_POLICIES | SPECIAL_POLICIES
+ALLOWED_OUTPUT_POLICIES = {"DIRECT"} | VISIBLE_SERVICE_POLICIES
 FORBIDDEN_LEGACY_GROUPS = {
     "🚀 节点选择",
     "🚀 手动切换",
@@ -78,24 +72,27 @@ FORBIDDEN_LEGACY_GROUPS = {
     "🎯 全球直连",
     "🛑 广告拦截",
     "🐟 漏网之鱼",
-    "🌐 国外网站",
+    "兜底后备策略",
+    "📹 油管视频",
+    "🎥 奈飞视频",
+    "🌍 国外媒体",
+    "Ⓜ️ 微软服务",
+    "🍎 苹果服务",
+    "🎮 游戏平台",
 }
 
-# Remote Rule is first-match-wins. Keep narrow service bundles first, then the
-# broad DIRECT set, then blocked-site residuals, and only then the generic tail.
+# Remote Rule is first-match-wins. Fine-grained rule bundles may share one
+# visible policy; UI groups remain compact while source rules stay auditable.
 BUNDLE_SPECS = [
     {"policy": "🤖 AI平台", "path": "Bundles/AI.list", "tag": "🤖 AI平台"},
     {"policy": "📲 电报消息", "path": "Bundles/Telegram.list", "tag": "📲 电报消息"},
-    {"policy": "📹 油管视频", "path": "Bundles/YouTube.list", "tag": "📹 油管视频"},
-    {"policy": "🎥 奈飞视频", "path": "Bundles/Netflix.list", "tag": "🎥 奈飞视频"},
-    {"policy": "🌍 国外媒体", "path": "Bundles/Streaming.list", "tag": "🌍 国外媒体"},
-    {"policy": "Ⓜ️ 微软服务", "path": "Bundles/Microsoft.list", "tag": "Ⓜ️ 微软服务"},
-    {"policy": "🍎 苹果服务", "path": "Bundles/Apple.list", "tag": "🍎 苹果服务"},
-    {"policy": "🎮 游戏平台", "path": "Bundles/Game.list", "tag": "🎮 游戏平台"},
+    {"policy": "🎬 流媒体", "path": "Bundles/YouTube.list", "tag": "📹 油管视频"},
+    {"policy": "🎬 流媒体", "path": "Bundles/Netflix.list", "tag": "🎥 奈飞视频"},
+    {"policy": "🎬 流媒体", "path": "Bundles/Streaming.list", "tag": "🎬 流媒体"},
     {"policy": "💳 金融平台", "path": "Bundles/Finance.list", "tag": "💳 金融平台"},
     {"policy": "DIRECT", "path": "Bundles/Direct.list", "tag": "🎯 全球直连"},
-    {"policy": "兜底后备策略", "path": "Bundles/Blacklist.list", "tag": "🧱 黑名单", "kind": "blacklist"},
-    {"policy": "兜底后备策略", "path": "Bundles/Fallback.list", "tag": "🐟 漏网之鱼", "kind": "fallback"},
+    {"policy": "🌐 国外网站", "path": "Bundles/Blacklist.list", "tag": "🧱 黑名单", "kind": "blacklist"},
+    {"policy": "🌐 国外网站", "path": "Bundles/Fallback.list", "tag": "🐟 漏网之鱼", "kind": "fallback"},
 ]
 
 RULE_TYPE_ORDER = {
@@ -124,61 +121,6 @@ RAW_GITHUB = re.compile(
 )
 
 
-COUNTRY_FILTER_EXCLUDE = (
-    r"回国|校园|游戏|🎮|群|邀请|返利|官网|客服|网址|订阅|流量|到期|机场|过期|已用|通知|"
-    r"国内|频道|教程|更新|作者|邮箱|\b(?:USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author|Traffic)\d*\b"
-)
-
-
-def flag_emoji(code: str) -> str:
-    if len(code) != 2 or not code.isalpha():
-        raise ValueError(f"invalid ISO alpha-2 code: {code!r}")
-    return "".join(chr(0x1F1E6 + ord(ch) - ord("A")) for ch in code.upper())
-
-
-def regex_literal(value: str) -> str:
-    # Keep spaces and commas readable while escaping regex metacharacters.
-    return re.sub(r"([.\\^$*+?{}\[\]|()])", r"\\\1", value)
-
-
-def render_country_filters() -> str:
-    countries = COUNTRY_CATALOG.get("countries", [])
-    if len(countries) < 249:
-        raise ValueError(f"country catalog is incomplete: {len(countries)} entries")
-
-    seen: set[str] = set()
-    lines: list[str] = []
-    for item in countries:
-        code = item["code"].upper()
-        if code in seen:
-            raise ValueError(f"duplicate country code: {code}")
-        seen.add(code)
-
-        alpha3 = item.get("alpha3", "").upper()
-        label = item.get("label") or code
-        terms = [flag_emoji(code)]
-        for value in item.get("terms", []):
-            if value and value not in terms:
-                terms.append(value)
-        english_name = item.get("name")
-        if english_name and english_name not in terms:
-            terms.append(english_name)
-
-        text_terms = "|".join(regex_literal(value) for value in terms)
-        codes = "|".join(filter(None, [code, alpha3]))
-        match = rf"(?i:{text_terms}|\b(?:{codes})(?:\d+)?\b)"
-        pattern = rf"^(?=.*(?:{match}))(?!.*(?i:{COUNTRY_FILTER_EXCLUDE})).*$"
-        lines.append(
-            f'{flag_emoji(code)} {label}节点 = NameRegex, FilterKey = "{pattern}"'
-        )
-
-    required = {"HK", "TW", "JP", "KR", "SG", "US", "CA", "GB", "DE", "FR", "AU", "NZ", "XK"}
-    missing = sorted(required - seen)
-    if missing:
-        raise ValueError("country catalog is missing required entries: " + ", ".join(missing))
-    return "\n".join(lines)
-
-
 def output_policy(item: dict) -> str:
     policy = RULESET_POLICY_OVERRIDES.get(item["name"])
     if policy is None:
@@ -203,54 +145,67 @@ def group_line(name: str) -> str | None:
 
 
 def validate_template_policy_groups() -> None:
-    missing = [policy for policy in sorted(VISIBLE_SERVICE_POLICIES) if group_line(policy) is None]
-    if missing:
-        raise ValueError(
-            "Loon template is missing service policy groups: " + ", ".join(missing)
-        )
+    expected = [
+        "♻️ 全局优选",
+        "🌐 国外网站",
+        "🤖 AI平台",
+        "📲 电报消息",
+        "🎬 流媒体",
+        "💳 金融平台",
+    ]
 
-    present_forbidden = [policy for policy in sorted(FORBIDDEN_LEGACY_GROUPS) if group_line(policy) is not None]
-    if present_forbidden:
+    group_block_match = re.search(r"(?s)\[Proxy Group\]\n(.*?)\n\[Rule\]", TEMPLATE)
+    if not group_block_match:
+        raise ValueError("Loon template is missing Proxy Group block")
+    group_block = group_block_match.group(1)
+    actual = re.findall(
+        r"(?m)^([^#\n=]+?)\s*=\s*(?:select|url-test|fallback|load-balance),",
+        group_block,
+    )
+    if actual != expected:
         raise ValueError(
-            "Loon template still contains deprecated intermediary groups: "
-            + ", ".join(present_forbidden)
+            "visible policy groups must stay minimal; expected "
+            + ", ".join(expected)
+            + "; got "
+            + ", ".join(actual)
         )
 
     auto = group_line("♻️ 全局优选")
     if auto is None or not auto.startswith("url-test,全球节点"):
         raise ValueError("♻️ 全局优选 must be the single global url-test over 全球节点")
 
-    url_test_groups = re.findall(r"(?m)^([^#\n=]+?)\s*=\s*url-test,", TEMPLATE)
-    if url_test_groups != ["♻️ 全局优选"]:
-        raise ValueError(
-            "template must contain exactly one url-test group: ♻️ 全局优选; got "
-            + ", ".join(url_test_groups)
-        )
-
-    if re.search(r"(?m)^.*(?:时延优选|手动策略)\s*=", TEMPLATE):
-        raise ValueError("template still defines regional manual/latency policy groups")
-
-    fallback = group_line("兜底后备策略")
-    if fallback is None or not fallback.startswith("select,"):
-        raise ValueError("兜底后备策略 must be a select group")
-    if "♻️ 全局优选" not in fallback or "全球节点" not in fallback:
-        raise ValueError("兜底后备策略 must expose global auto and direct node selection")
-
-    for policy in sorted(VISIBLE_SERVICE_POLICIES):
+    for policy in expected[1:]:
         line = group_line(policy) or ""
         if not line.startswith("select,"):
             raise ValueError(f"{policy} must be a select group")
-        if "♻️ 全局优选" not in line:
-            raise ValueError(f"{policy} must expose ♻️ 全局优选")
-        if "全球节点" not in line:
-            raise ValueError(f"{policy} must expose actual nodes through 全球节点")
-        if "时延优选" in line or "手动策略" in line:
-            raise ValueError(f"{policy} still references nested regional policy groups")
+        if "♻️ 全局优选" not in line or "全球节点" not in line:
+            raise ValueError(f"{policy} must expose global auto and actual nodes")
 
-    if "{{COUNTRY_FILTERS}}" not in TEMPLATE:
-        raise ValueError("Loon template lost COUNTRY_FILTERS placeholder")
-    if "FINAL,兜底后备策略" not in TEMPLATE:
-        raise ValueError("Loon FINAL must point directly to 兜底后备策略")
+    if re.search(r"(?m)^.*(?:时延优选|手动策略)\s*=", TEMPLATE):
+        raise ValueError("template still defines regional manual/latency groups")
+
+    present_forbidden = [
+        policy for policy in sorted(FORBIDDEN_LEGACY_GROUPS)
+        if group_line(policy) is not None
+    ]
+    if present_forbidden:
+        raise ValueError(
+            "Loon template still contains deprecated groups: "
+            + ", ".join(present_forbidden)
+        )
+
+    filter_block_match = re.search(r"(?s)\[Remote Filter\]\n(.*?)\n\[Proxy Group\]", TEMPLATE)
+    if not filter_block_match:
+        raise ValueError("Loon template is missing Remote Filter block")
+    filter_lines = re.findall(r"(?m)^([^#\n=]+?)\s*=\s*NameRegex,", filter_block_match.group(1))
+    if filter_lines != ["全球节点"]:
+        raise ValueError(
+            "release config must render only 全球节点 Remote Filter; got "
+            + ", ".join(filter_lines)
+        )
+
+    if "FINAL,🌐 国外网站" not in TEMPLATE:
+        raise ValueError("Loon FINAL must point to 🌐 国外网站")
 
 
 def file_rules(path: Path) -> set[str]:
@@ -333,7 +288,7 @@ def build_bundles() -> list[dict]:
     # handled by a visible service group or DIRECT. The generic fallback group
     # intentionally does not exclude it, because many blocked sites live there.
     claimed: set[str] = set(grouped.get("DIRECT", set()))
-    for policy in VISIBLE_SERVICE_POLICIES:
+    for policy in VISIBLE_SERVICE_POLICIES - {"🌐 国外网站"}:
         claimed.update(grouped.get(policy, set()))
     claimed_index = coverage_index(claimed)
     blacklist = {rule for rule in raw_blacklist if not covered_by(rule, claimed_index)}
@@ -345,10 +300,10 @@ def build_bundles() -> list[dict]:
     blacklist_index = coverage_index(blacklist)
     fallback = {
         rule
-        for rule in grouped.get("兜底后备策略", set())
+        for rule in grouped.get("🌐 国外网站", set())
         if not covered_by(rule, blacklist_index)
     }
-    grouped["兜底后备策略"] = fallback
+    grouped["🌐 国外网站"] = fallback
 
     built_specs: list[dict] = []
     for spec in BUNDLE_SPECS:
@@ -421,8 +376,7 @@ def main() -> None:
     out_dir = ROOT / "config"
     out_dir.mkdir(parents=True, exist_ok=True)
     for filename, flavor in FLAVORS.items():
-        text = TEMPLATE.replace("{{COUNTRY_FILTERS}}", render_country_filters())
-        text = text.replace(
+        text = TEMPLATE.replace(
             "{{REMOTE_RULES}}", remote_rules(flavor["rules_base"], bundles)
         )
         text = text.replace("{{CONFIG_VARIANT}}", filename)
