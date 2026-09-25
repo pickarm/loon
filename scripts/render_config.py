@@ -204,8 +204,8 @@ def validate_template_policy_groups() -> None:
             + ", ".join(filter_lines)
         )
 
-    if "FINAL,🌐 国外网站" not in TEMPLATE:
-        raise ValueError("Loon FINAL must point to 🌐 国外网站")
+    if re.search(r"(?m)^FINAL,", TEMPLATE):
+        raise ValueError("release config must not define an explicit FINAL rule")
 
 
 def file_rules(path: Path) -> set[str]:
