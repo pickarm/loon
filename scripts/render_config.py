@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RULE_DIR = ROOT / "rules"
 CFG = json.loads((ROOT / "sources" / "sources.json").read_text(encoding="utf-8"))
 TEMPLATE = (ROOT / "templates" / "Loon.conf.tpl").read_text(encoding="utf-8")
+COUNTRY_CATALOG = json.loads((ROOT / "sources" / "countries.json").read_text(encoding="utf-8"))
 
 FLAVORS = {
     "Loon.conf": {
@@ -123,6 +124,61 @@ RAW_GITHUB = re.compile(
 )
 
 
+COUNTRY_FILTER_EXCLUDE = (
+    r"回国|校园|游戏|🎮|群|邀请|返利|官网|客服|网址|订阅|流量|到期|机场|过期|已用|通知|"
+    r"国内|频道|教程|更新|作者|邮箱|\b(?:USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author|Traffic)\d*\b"
+)
+
+
+def flag_emoji(code: str) -> str:
+    if len(code) != 2 or not code.isalpha():
+        raise ValueError(f"invalid ISO alpha-2 code: {code!r}")
+    return "".join(chr(0x1F1E6 + ord(ch) - ord("A")) for ch in code.upper())
+
+
+def regex_literal(value: str) -> str:
+    # Keep spaces and commas readable while escaping regex metacharacters.
+    return re.sub(r"([.\\^$*+?{}\[\]|()])", r"\\\1", value)
+
+
+def render_country_filters() -> str:
+    countries = COUNTRY_CATALOG.get("countries", [])
+    if len(countries) < 249:
+        raise ValueError(f"country catalog is incomplete: {len(countries)} entries")
+
+    seen: set[str] = set()
+    lines: list[str] = []
+    for item in countries:
+        code = item["code"].upper()
+        if code in seen:
+            raise ValueError(f"duplicate country code: {code}")
+        seen.add(code)
+
+        alpha3 = item.get("alpha3", "").upper()
+        label = item.get("label") or item.get("name") or code
+        terms = [flag_emoji(code)]
+        for value in item.get("terms", []):
+            if value and value not in terms:
+                terms.append(value)
+        english_name = item.get("name")
+        if english_name and english_name not in terms:
+            terms.append(english_name)
+
+        text_terms = "|".join(regex_literal(value) for value in terms)
+        codes = "|".join(filter(None, [code, alpha3]))
+        match = rf"(?i:{text_terms}|\b(?:{codes})(?:\d+)?\b)"
+        pattern = rf"^(?=.*(?:{match}))(?!.*(?i:{COUNTRY_FILTER_EXCLUDE})).*$"
+        lines.append(
+            f'{flag_emoji(code)} {label}节点 = NameRegex, FilterKey = "{pattern}"'
+        )
+
+    required = {"HK", "TW", "JP", "KR", "SG", "US", "CA", "GB", "DE", "FR", "AU", "NZ", "XK"}
+    missing = sorted(required - seen)
+    if missing:
+        raise ValueError("country catalog is missing required entries: " + ", ".join(missing))
+    return "\n".join(lines)
+
+
 def output_policy(item: dict) -> str:
     policy = RULESET_POLICY_OVERRIDES.get(item["name"])
     if policy is None:
@@ -160,23 +216,32 @@ def validate_template_policy_groups() -> None:
             + ", ".join(present_forbidden)
         )
 
+    auto = group_line("♻️ 全局优选")
+    if auto is None or not auto.startswith("url-test,全球节点"):
+        raise ValueError("♻️ 全局优选 must be the single global url-test over 全球节点")
+
+    if re.search(r"(?m)^.*(?:时延优选|手动策略)\s*=", TEMPLATE):
+        raise ValueError("template still defines regional manual/latency policy groups")
+
     fallback = group_line("兜底后备策略")
-    if fallback is None or not fallback.startswith("fallback,"):
-        raise ValueError("兜底后备策略 must remain a fallback group")
-    if "节点" not in fallback:
-        raise ValueError("兜底后备策略 must consume Remote Filter node sets directly")
+    if fallback is None or not fallback.startswith("select,"):
+        raise ValueError("兜底后备策略 must be a select group")
+    if "♻️ 全局优选" not in fallback or "全球节点" not in fallback:
+        raise ValueError("兜底后备策略 must expose global auto and direct node selection")
 
     for policy in sorted(VISIBLE_SERVICE_POLICIES):
         line = group_line(policy) or ""
         if not line.startswith("select,"):
             raise ValueError(f"{policy} must be a select group")
-        if "节点" not in line:
-            raise ValueError(f"{policy} must reference Remote Filter node sets directly")
-        if "手动策略" in line or "时延优选" in line:
+        if "♻️ 全局优选" not in line:
+            raise ValueError(f"{policy} must expose ♻️ 全局优选")
+        if "全球节点" not in line:
+            raise ValueError(f"{policy} must expose actual nodes through 全球节点")
+        if "时延优选" in line or "手动策略" in line:
             raise ValueError(f"{policy} still references nested regional policy groups")
 
-    if re.search(r"(?m)^(?:香港|台湾|日本|韩国|新加坡|美国).*(?:手动策略|时延优选)\s*=", TEMPLATE):
-        raise ValueError("template still defines nested regional manual/latency groups")
+    if "{{COUNTRY_FILTERS}}" not in TEMPLATE:
+        raise ValueError("Loon template lost COUNTRY_FILTERS placeholder")
     if "FINAL,兜底后备策略" not in TEMPLATE:
         raise ValueError("Loon FINAL must point directly to 兜底后备策略")
 
@@ -349,7 +414,8 @@ def main() -> None:
     out_dir = ROOT / "config"
     out_dir.mkdir(parents=True, exist_ok=True)
     for filename, flavor in FLAVORS.items():
-        text = TEMPLATE.replace(
+        text = TEMPLATE.replace("{{COUNTRY_FILTERS}}", render_country_filters())
+        text = text.replace(
             "{{REMOTE_RULES}}", remote_rules(flavor["rules_base"], bundles)
         )
         text = text.replace("{{CONFIG_VARIANT}}", filename)
