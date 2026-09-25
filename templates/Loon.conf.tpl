@@ -7,12 +7,13 @@ ip-mode = v4-only
 ipv6-vif = off
 dns-server = system
 sni-sniffing = true
-disable-stun = true
-# Most subscription nodes used with this profile only relay UDP. Disable UDP/443
-# so HTTP/3/QUIC falls back to TCP, which is typically more stable for ChatGPT.
-disable-udp-ports = 443
+# Allow application UDP to be relayed by proxy nodes. For VLESS + TCP + REALITY
+# subscriptions, set udp=true so UDP is carried inside the VLESS TCP tunnel.
+allow-udp-proxy = true
 dns-reject-mode = LoopbackIP
 domain-reject-mode = DNS
+# Safety only: if a node is misconfigured and still reports no UDP capability,
+# reject instead of leaking that UDP traffic directly.
 udp-fallback-mode = REJECT
 wifi-access-http-port = 7222
 wifi-access-socks5-port = 7221
@@ -30,8 +31,9 @@ bypass-tun = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,1
 
 [Remote Proxy]
 # 在 Loon 中添加你自己的订阅；公共模板不会保存私人订阅 URL。
-# 对 UDP 仅做转发/中继的节点，建议保持 block-quic=true。
-# 示例（不要直接使用）：sub = https://example.com/your-subscription,udp=true,block-quic=true,skip-cert-verify=false,enabled=true
+# 本配置按 VLESS/TCP/REALITY 的 UDP-over-VLESS 使用方式设计：
+# udp=true 会覆盖订阅节点默认的 UDP=false；block-quic=false 允许 QUIC、STUN、语音等 UDP 进入 VLESS 隧道。
+# 示例（不要直接使用）：sub = https://example.com/your-subscription,udp=true,block-quic=false,skip-cert-verify=false,enabled=true
 
 [Remote Filter]
 # 发布配置只保留一个全局节点筛选。国家目录保留在仓库数据中，不渲染为空地区对象。

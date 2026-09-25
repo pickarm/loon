@@ -16,6 +16,40 @@
 
 > 公共配置不会保存私人订阅 URL、MITM CA、证书或密码。导入后请在 Loon 中添加自己的节点订阅。
 
+## VLESS UDP-over-TCP
+
+这套配置按 **VLESS + TCP + REALITY / Vision** 节点设计。应用产生的 UDP 不会被全局禁掉，而是由 Loon 交给 VLESS 节点转发：
+
+```text
+应用 UDP（语音 / STUN / QUIC / 游戏）
+        ↓
+Loon UDP 代理
+        ↓
+VLESS UDP relay
+        ↓
+VLESS 的 TCP + REALITY 连接
+        ↓
+VPS
+        ↓
+目标 UDP
+```
+
+`[General]` 开启：
+
+```ini
+allow-udp-proxy = true
+```
+
+并且不再配置 `disable-stun` 或 `disable-udp-ports`。为了避免订阅里的 VLESS 节点默认 `udp=false`，添加 `[Remote Proxy]` 订阅时应使用：
+
+```ini
+udp=true,block-quic=false
+```
+
+`udp-fallback-mode = REJECT` 只作为误配置保护：如果某个节点最终仍然报告“不支持 UDP”，就拒绝该流量而不是绕过代理直连。它不会阻断已经启用 UDP relay 的 VLESS 节点。
+
+VPS 不需要开放额外 UDP **入站**端口；VLESS 外层仍走 TCP。服务端需要能够正常向互联网发起 UDP **出站**连接。
+
 ## 策略结构
 
 ### 1. 发布配置只保留 6 个可见策略组

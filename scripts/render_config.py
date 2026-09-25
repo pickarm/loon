@@ -210,6 +210,15 @@ def validate_template_policy_groups() -> None:
     if re.search(r"(?m)^FINAL,", TEMPLATE):
         raise ValueError("release config must not define an explicit FINAL rule")
 
+    if not re.search(r"(?m)^allow-udp-proxy\s*=\s*true\s*$", TEMPLATE):
+        raise ValueError("Loon template must enable allow-udp-proxy for VLESS UDP relay")
+    if re.search(r"(?m)^disable-stun\s*=\s*true\s*$", TEMPLATE):
+        raise ValueError("Loon template must not block STUN; voice/WebRTC UDP must remain available")
+    if re.search(r"(?m)^disable-udp-ports\s*=", TEMPLATE):
+        raise ValueError("Loon template must not globally block UDP ports")
+    if "udp=true,block-quic=false" not in TEMPLATE:
+        raise ValueError("Remote Proxy example must force UDP on and leave QUIC unblocked")
+
 
 def file_rules(path: Path) -> set[str]:
     rules: set[str] = set()
