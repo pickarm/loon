@@ -1,0 +1,27 @@
+{
+  "description": "Shared CDN / provider-wide host suffixes: suppress only blanket DOMAIN-SUFFIX entries in generic overseas/blacklist bundles. Specific hosts and AI/streaming/other service bundles retain their original rules. This list is not a DIRECT whitelist.",
+  "roots": [
+    "akamaiedge.net",
+    "akamaihd.net",
+    "akamaized.net",
+    "azureedge.net",
+    "azurefd.net",
+    "b-cdn.net",
+    "cdn77.com",
+    "cdnjs.com",
+    "cloudflare.com",
+    "cloudflare.net",
+    "cloudflarestorage.com",
+    "cloudfront.net",
+    "edgecastcdn.net",
+    "edgekey.net",
+    "edgesuite.net",
+    "fastly-edge.com",
+    "fastly.net",
+    "fastlylb.net",
+    "jsdelivr.com",
+    "jsdelivr.net",
+    "stackpathcdn.com",
+    "unpkg.com"
+  ]
+}

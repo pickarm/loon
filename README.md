@@ -156,6 +156,25 @@ YouTube / Netflix / 国外媒体的独立策略组
 
 发布配置不再写入显式 `FINAL` 规则。只有命中现有本地/远程规则的流量才会被这些策略映射处理。
 
+## 共享 CDN 保护（减少过度代理）
+
+`sources/shared_cdn_roots.json` 列出了 CloudFront、Akamai、Fastly、Azure CDN、jsDelivr、Cloudflare 等可能由大量不同网站共同使用的 CDN / 平台域名。
+
+构建 `🌐 国外网站` 的 **Blacklist / Fallback** 两个通用规则包时，自动删除这些根域名的整站 `DOMAIN-SUFFIX` 规则（例如 `DOMAIN-SUFFIX,cloudfront.net`），避免单个共享 CDN 根域名就把全部客户流量强行代理。
+
+**注意：这不是 CDN 直连白名单。** 以下行为保持不变：
+
+- 更精确的单个 CDN 子域名仍按原规则处理，比如 `DOMAIN,d123.cloudfront.net`。
+- AI / 流媒体等专用规则包不受这个保护器裁剪；ChatGPT 动态 Azure 后端的复合规则照常保留。
+- 只有确认在自己网络中可直连的具体 CDN 域名，才应手动加入 `override/direct.list`；它们会优先匹配 DIRECT，并参与 CN Guard。
+- 如果确实想让某个共享 CDN 根域名整站走代理，可以**显式**在 `override/proxy.list` 写对应 `DOMAIN-SUFFIX`，覆盖上述保护器。
+
+单纯被保护器去掉宽泛规则，并不保证该 CDN 会直连或一定连通；最终仍受其他更精确规则和客户端默认行为影响。
+
+CI 运行 `tests/test_shared_cdn_guard.py`，并在生成阶段检查通用 CDN 根域名没有意外重新进入 Blacklist / Fallback。
+
+这次更新只涉及已配置的 Remote Rule 远程内容；**刷新规则资源即可，不要重新导入整份 `Loon-CN.conf`**，否则可能覆盖本地私人节点订阅。
+
 ## 广告规则
 
 **不生成独立广告规则集，也没有广告拦截策略组。**

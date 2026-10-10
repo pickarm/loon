@@ -9,6 +9,9 @@ ROOT = Path(__file__).resolve().parents[1]
 RULE_DIR = ROOT / "rules"
 CFG = json.loads((ROOT / "sources" / "sources.json").read_text(encoding="utf-8"))
 TEMPLATE = (ROOT / "templates" / "Loon.conf.tpl").read_text(encoding="utf-8")
+SHARED_CDN_ROOTS = frozenset(
+    json.loads((ROOT / "sources" / "shared_cdn_roots.json").read_text(encoding="utf-8"))["roots"]
+)
 
 FLAVORS = {
     "Loon.conf": {
@@ -282,6 +285,18 @@ def covered_by(rule: str, index: tuple[set[str], set[str], set[str]]) -> bool:
     return rule in other
 
 
+def blanket_shared_cdn_rule(rule: str) -> bool:
+    """Only suppress provider-wide suffix proxying, not individual CDN hosts."""
+    typ, value = split_rule(rule)
+    return typ == "DOMAIN-SUFFIX" and value in SHARED_CDN_ROOTS
+
+
+def keep_generic_proxy_rule(rule: str, explicit_proxy_rules: set[str]) -> bool:
+    # Explicit user opt-in from override/proxy.list wins over this conservative
+    # heuristic. This is NOT a DIRECT whitelist.
+    return not blanket_shared_cdn_rule(rule) or rule in explicit_proxy_rules
+
+
 def rule_sort_key(rule: str) -> tuple[int, str]:
     typ = rule.split(",", 1)[0].upper()
     return RULE_TYPE_ORDER.get(typ, 99), rule.lower()
@@ -313,6 +328,27 @@ def build_bundles() -> list[dict]:
     if not raw_blacklist:
         raise ValueError("blacklist source ruleset is missing or empty")
 
+    # Multi-tenant CDN roots must not be forced to generic overseas routing.
+    # Keep specific CDN hosts (DOMAIN or narrower DOMAIN-SUFFIX), keep the
+    # original AI/streaming/business bundles, and honor explicit proxy opt-ins.
+    explicit_proxy_rules = file_rules(ROOT / "override" / "proxy.list")
+    raw_generic = grouped["🌐 国外网站"]
+    grouped["🌐 国外网站"] = {
+        rule for rule in raw_generic
+        if keep_generic_proxy_rule(rule, explicit_proxy_rules)
+    }
+    old_blacklist_count = len(raw_blacklist)
+    raw_blacklist = {
+        rule for rule in raw_blacklist
+        if keep_generic_proxy_rule(rule, explicit_proxy_rules)
+    }
+    print(
+        "[cdn-guard] removed provider-wide suffixes from generic proxy="
+        f"{len(raw_generic) - len(grouped['🌐 国外网站'])}, "
+        f"blacklist={old_blacklist_count - len(raw_blacklist)}",
+        flush=True,
+    )
+
     # Blacklist is only the blocked-site residual: remove anything already
     # handled by a visible service group or DIRECT. The generic fallback group
     # intentionally does not exclude it, because many blocked sites live there.
@@ -333,6 +369,16 @@ def build_bundles() -> list[dict]:
         if not covered_by(rule, blacklist_index)
     }
     grouped["🌐 国外网站"] = fallback
+
+    for kind, rules in (("Blacklist", blacklist), ("Fallback", fallback)):
+        leaked = sorted(
+            rule for rule in rules
+            if blanket_shared_cdn_rule(rule) and rule not in explicit_proxy_rules
+        )
+        if leaked:
+            raise ValueError(
+                f"{kind} contains blanket shared CDN routing: {', '.join(leaked)}"
+            )
 
     built_specs: list[dict] = []
     for spec in BUNDLE_SPECS:

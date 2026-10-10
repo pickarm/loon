@@ -45,6 +45,9 @@ jobs:
       - name: Prepare ruleset catalog
         run: python scripts/prepare_catalog.py
 
+      - name: Test shared CDN routing guard
+        run: python -m unittest discover -s tests -p 'test_*.py'
+
       - name: Build and validate
         run: python scripts/build.py --refresh
 
