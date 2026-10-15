@@ -62,10 +62,14 @@ bypass-tun = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,1
 
 [Remote Rule]
 # Shared personal rules. Keep these before the ordinary subscriptions.
-https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/direct.list, policy=DIRECT, tag=个人直连, enabled=true
-https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/proxy.list, policy=🌐 国外网站, tag=个人代理, enabled=true
-https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/ai.list, policy=🤖 AI平台, tag=个人AI, enabled=true
-https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/reject.list, policy=REJECT, tag=个人拦截, enabled=true
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/loon/direct.list, policy=DIRECT, tag=个人直连, enabled=true
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/loon/proxy.list, policy=🌐 国外网站, tag=个人代理, enabled=true
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/loon/ai.list, policy=🤖 AI平台, tag=个人AI, enabled=true
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/loon/reject.list, policy=REJECT, tag=个人拦截, enabled=true
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/loon/media.list, policy=🎬 流媒体, tag=个人流媒体, enabled=true
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/loon/telegram.list, policy=📲 电报消息, tag=个人电报, enabled=true
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/loon/finance.list, policy=💳 金融平台, tag=个人金融, enabled=true
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/loon/auto.list, policy=♻️ 全局优选, tag=个人优选, enabled=true
 {{REMOTE_RULES}}
 https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/loon-geoip.list, policy=DIRECT, tag=国内IP兜底, enabled=true
 

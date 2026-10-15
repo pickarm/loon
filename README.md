@@ -9,7 +9,7 @@
 **已有设备请一次性手动迁移，不要覆盖主配置：**
 
 1. 打开管理网页的“设备接入”，复制 Loon 接入片段。
-2. 只把片段中的四条订阅合并到本地 `[Remote Rule]` 最前面。
+2. 把新版片段中的 8 条个人订阅合并到本地 `[Remote Rule]` 最前面；如果已接入旧版 4 条个人订阅，请替换它们。普通订阅保留。
 3. 如果 `[Rule]` 原来有 `GEOIP,CN,DIRECT`，为让个人 IP 规则也能覆盖它，请移除该行，并在 `[Remote Rule]` 最末尾加入：
 
 ```ini
@@ -19,6 +19,8 @@ https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/persona
 4. 保留已有节点订阅、策略组、证书，刷新远程规则即可。
 
 网页编辑保存后再刷新各设备规则；不要更新整份公共 bootstrap。个人订阅地址使用 Raw，避免 CDN 缓存延迟；Raw 不通时自行使用可访问镜像。Loon 的本地规则、插件规则仍可能优先于远程订阅，存在冲突时要调整对应本地规则或插件。
+
+网页分类与客户端分组分开维护：例如 YouTube 在 Clash 对应油管组，在 Loon 对应流媒体组；微软在 Clash 对应微软服务组，在 Loon 默认 DIRECT。每条规则也可单独覆盖各端映射。Loon 保留原 6 个可见策略组，不会为了适配 Clash 新增地区组。规则输出地址为 `personal/loon/{分组ID}.list`。
 
 面向中国大陆网络环境的 **Loon 配置 + 多源聚合规则库**。规则数据来自多个成熟上游，经统一解析、去重、CN Guard 与语义测试后发布到 `release` 分支。
 
