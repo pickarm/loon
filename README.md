@@ -1,5 +1,25 @@
 # Loon Rules
 
+## 跨设备个人规则
+
+网页管理：**https://pickarm.github.io/acl4ssr-substore-override/**。个人规则统一保存在 `pickarm/acl4ssr-substore-override` 的 `personal/rules.json`，本仓库不再另复制一份个人数据。
+
+新 bootstrap 模板在普通远程规则之前引用个人直连、代理、AI、拦截规则；普通规则之后用远程 `personal/loon-geoip.list` 做国内 IP 兜底，不再在本地 `[Rule]` 提前放 GEOIP,CN,DIRECT。
+
+**已有设备请一次性手动迁移，不要覆盖主配置：**
+
+1. 打开管理网页的“设备接入”，复制 Loon 接入片段。
+2. 只把片段中的四条订阅合并到本地 `[Remote Rule]` 最前面。
+3. 如果 `[Rule]` 原来有 `GEOIP,CN,DIRECT`，为让个人 IP 规则也能覆盖它，请移除该行，并在 `[Remote Rule]` 最末尾加入：
+
+```ini
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/loon-geoip.list, policy=DIRECT, tag=国内IP兜底, enabled=true
+```
+
+4. 保留已有节点订阅、策略组、证书，刷新远程规则即可。
+
+网页编辑保存后再刷新各设备规则；不要更新整份公共 bootstrap。个人订阅地址使用 Raw，避免 CDN 缓存延迟；Raw 不通时自行使用可访问镜像。Loon 的本地规则、插件规则仍可能优先于远程订阅，存在冲突时要调整对应本地规则或插件。
+
 面向中国大陆网络环境的 **Loon 配置 + 多源聚合规则库**。规则数据来自多个成熟上游，经统一解析、去重、CN Guard 与语义测试后发布到 `release` 分支。
 
 当前生成 **61 个细粒度规则集**。规则可以继续增加，但 Loon 用户可见策略保持精简：**规则细、组少、业务组里直接选具体节点**。
@@ -255,3 +275,4 @@ python scripts/build.py --refresh
 生成内容位于 `rules/`、`config/` 和 `build/report.json`。
 
 生成规则仍受各上游项目自身许可与版权约束。本仓库不会把用户私人订阅、证书或口令写入公共文件。
+

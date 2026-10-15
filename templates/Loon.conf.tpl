@@ -58,10 +58,16 @@ bypass-tun = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,1
 💳 金融平台 = select,♻️ 全局优选,全球节点,DIRECT
 
 [Rule]
-GEOIP,CN,DIRECT
+# Personal and ordinary remote rules are evaluated before the GeoIP fallback below.
 
 [Remote Rule]
+# Shared personal rules. Keep these before the ordinary subscriptions.
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/direct.list, policy=DIRECT, tag=个人直连, enabled=true
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/proxy.list, policy=🌐 国外网站, tag=个人代理, enabled=true
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/ai.list, policy=🤖 AI平台, tag=个人AI, enabled=true
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/reject.list, policy=REJECT, tag=个人拦截, enabled=true
 {{REMOTE_RULES}}
+https://raw.githubusercontent.com/pickarm/acl4ssr-substore-override/main/personal/loon-geoip.list, policy=DIRECT, tag=国内IP兜底, enabled=true
 
 [Host]
 
@@ -87,3 +93,4 @@ https://kelee.one/Tool/Loon/Lpx/Script-Hub.lpx, policy=🌐 国外网站, enable
 [Mitm]
 # 公共模板故意不包含 CA、密码或私人证书。
 skip-server-cert-verify = false
+

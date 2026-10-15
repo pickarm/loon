@@ -427,6 +427,9 @@ def rewrite_github_raw(text: str, mode: str) -> str:
 
     def repl(match: re.Match[str]) -> str:
         raw = match.group(0)
+        # Personal edits should not wait on CDN cache invalidation.
+        if "/pickarm/acl4ssr-substore-override/main/personal/" in raw:
+            return raw
         if mode == "proxy":
             return f"https://githubproxy.cc/{raw}"
         if mode == "jsdelivr":
@@ -461,3 +464,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
