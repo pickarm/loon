@@ -197,6 +197,16 @@ CI 运行 `tests/test_shared_cdn_guard.py`，并在生成阶段检查通用 CDN 
 
 这次更新只涉及已配置的 Remote Rule 远程内容；**刷新规则资源即可，不要重新导入整份 `Loon-CN.conf`**，否则可能覆盖本地私人节点订阅。
 
+## iOS Gemini 分流补充
+
+为解决 Gemini App 在规则模式下漏到普通海外策略或直连的问题，`override/gemini.list` 固定 10 个**精确主机规则**（其中 `gemini.google.com` 之前已收录）。覆盖 `jnn-pa.googleapis.com`、`waa-pa.clients6.google.com`、`ogads-pa.clients6.google.com`、`optimizationguide-pa.googleapis.com`、`www.googleapis.com`、`ogs.google.com`，以及 `ssl.gstatic.com`、`fonts.googleapis.com`、`www.gstatic.com` 等静态资源。
+
+这些域名来自 [Google 官方 Gemini App 防火墙主机清单](https://knowledge.workspace.google.com/admin/generative-ai/gemini-app/gemini-app-firewall-settings)。生成器在 CN Guard 之后将 Gemini 特定覆盖注入细粒度 `AI/Gemini.list` 和发布版 `Bundles/AI.list`；`🤖 AI平台` 的 Remote Rule 位于 `DIRECT` 规则包之前。这样不会被既有的静态资源直连规则提前截获。
+
+**不会把整个 `google.com`、`googleapis.com`、`gstatic.com`、`youtube.com` 改成 AI 策略**，避免影响其他 Google 服务。反过来，共用精确主机如 `www.gstatic.com` 和 `fonts.googleapis.com` 在这些域名上的**其他应用流量**也会被导入 AI，这属于按域名分流的边界，无法只根据域名识别来源是否是 Gemini App。
+
+**升级方式：只刷新 Loon 的「🤖 AI平台」Remote Rule**（若 jsDelivr 分支缓存未更新，可把这一条规则地址换成 Raw 形式）。**不要重新导入整份 `Loon-CN.conf`**，否则可能再次覆盖私人节点订阅。Loon 日志若显示更早的本地规则/插件命中，需单独排查优先级。
+
 ## 广告规则
 
 **不生成独立广告规则集，也没有广告拦截策略组。**
