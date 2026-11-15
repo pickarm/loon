@@ -1,0 +1,15 @@
+# iOS Gemini exact-host overrides. Source: Google Workspace Gemini App firewall settings.
+# https://knowledge.workspace.google.com/admin/generative-ai/gemini-app/gemini-app-firewall-settings
+# Keep exact host matches: Google API/static hosts are shared with other apps.
+# Inject into AI Bundle AFTER CN Guard, so existing DIRECT rules do not strip
+# Gemini iOS dependencies. Do NOT use DOMAIN-SUFFIX,google.com/googleapis.com/gstatic.com.
+DOMAIN,gemini.google.com
+DOMAIN,jnn-pa.googleapis.com
+DOMAIN,waa-pa.clients6.google.com
+DOMAIN,ogads-pa.clients6.google.com
+DOMAIN,optimizationguide-pa.googleapis.com
+DOMAIN,www.googleapis.com
+DOMAIN,ogs.google.com
+DOMAIN,ssl.gstatic.com
+DOMAIN,fonts.googleapis.com
+DOMAIN,www.gstatic.com
