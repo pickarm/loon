@@ -5,11 +5,11 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OVERRIDE = ROOT / "override" / "ai.list"
-TARGETS = [
-    ROOT / "rules" / "AI" / "OpenAI.list",
-    ROOT / "rules" / "Bundles" / "AI.list",
-]
+OPENAI_OVERRIDE = ROOT / "override" / "ai.list"
+GEMINI_OVERRIDE = ROOT / "override" / "gemini.list"
+OPENAI_TARGET = ROOT / "rules" / "AI" / "OpenAI.list"
+GEMINI_TARGET = ROOT / "rules" / "AI" / "Gemini.list"
+AI_BUNDLE = ROOT / "rules" / "Bundles" / "AI.list"
 REPORT = ROOT / "build" / "report.json"
 
 RULE_TYPE_ORDER = {
@@ -49,7 +49,7 @@ def sort_key(rule: str) -> tuple[int, str]:
     return RULE_TYPE_ORDER.get(typ, 99), rule.lower()
 
 
-def inject(path: Path, extra: set[str]) -> tuple[int, int]:
+def inject(path: Path, extra: set[str], label: str) -> tuple[int, int]:
     if not path.exists():
         raise FileNotFoundError(path)
 
@@ -65,11 +65,11 @@ def inject(path: Path, extra: set[str]) -> tuple[int, int]:
             new_headers.append(f"# RULES: {len(merged)}")
         else:
             new_headers.append(line)
-        if line == "# SOURCE-RULESET: override/ai.list" or line == "# SOURCE: override/ai.list":
+        if line == f"# SOURCE-RULESET: override/{label}.list" or line == f"# SOURCE: override/{label}.list":
             source_seen = True
 
     if not source_seen:
-        marker = "# SOURCE-RULESET: override/ai.list" if "Bundles" in path.parts else "# SOURCE: override/ai.list"
+        marker = f"# SOURCE-RULESET: override/{label}.list" if "Bundles" in path.parts else f"# SOURCE: override/{label}.list"
         new_headers.append(marker)
 
     body = "\n".join(sorted(merged, key=sort_key))
@@ -77,35 +77,47 @@ def inject(path: Path, extra: set[str]) -> tuple[int, int]:
     return len(before), len(merged)
 
 
-def update_report(old_count: int, new_count: int) -> None:
+def update_report(changes: dict[str, int]) -> None:
     if not REPORT.exists():
         return
     data = json.loads(REPORT.read_text(encoding="utf-8"))
-    item = data.get("rulesets", {}).get("AI/OpenAI.list")
-    if not item:
-        return
-    delta = new_count - int(item.get("count", old_count))
-    item["count"] = new_count
+    delta = 0
+    for name, count in changes.items():
+        item = data.get("rulesets", {}).get(name)
+        if not item:
+            raise RuntimeError(f"Missing build report ruleset: {name}")
+        delta += count - int(item["count"])
+        item["count"] = count
     data["total_rules"] = int(data.get("total_rules", 0)) + delta
     REPORT.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> None:
-    extra = active_rules(OVERRIDE)
-    if not extra:
-        raise RuntimeError("override/ai.list is empty")
+    openai_extra = active_rules(OPENAI_OVERRIDE)
+    gemini_extra = active_rules(GEMINI_OVERRIDE)
+    if not openai_extra or not gemini_extra:
+        raise RuntimeError("AI/Gemini overrides must not be empty")
 
-    openai_before = openai_after = 0
-    for target in TARGETS:
-        before, after = inject(target, extra)
+    changes: dict[str, int] = {}
+    for target, extra, label in (
+        (OPENAI_TARGET, openai_extra, "ai"),
+        (GEMINI_TARGET, gemini_extra, "gemini"),
+    ):
+        before, after = inject(target, extra, label)
         print(f"[ai-postprocess] {target.relative_to(ROOT)}: {before} -> {after}")
-        if target.name == "OpenAI.list":
-            openai_before, openai_after = before, after
+        changes[f"AI/{target.name}"] = after
 
-    update_report(openai_before, openai_after)
+    # Preserve all OpenAI + Gemini overrides in the same published AI bundle.
+    # The generated config subscribes to this bundle BEFORE the generic DIRECT
+    # one, so these exact hosts win even if DIRECT also contains them.
+    for extra, label in ((openai_extra, "ai"), (gemini_extra, "gemini")):
+        before, after = inject(AI_BUNDLE, extra, label)
+        print(f"[ai-postprocess] {AI_BUNDLE.relative_to(ROOT)} [{label}]: {before} -> {after}")
 
-    ai_bundle = active_rules(ROOT / "rules" / "Bundles" / "AI.list")
-    missing = sorted(extra - ai_bundle)
+    update_report(changes)
+
+    ai_bundle = active_rules(AI_BUNDLE)
+    missing = sorted((openai_extra | gemini_extra) - ai_bundle)
     if missing:
         raise RuntimeError("AI bundle missing overrides: " + ", ".join(missing))
 
@@ -118,8 +130,7 @@ def main() -> None:
         "AND,((DOMAIN-KEYWORD, chatgpt-async-webps-prod-), (DOMAIN-SUFFIX, webpubsub.azure.com))",
         "AND,((DOMAIN-KEYWORD, openaicom-api-), (DOMAIN-SUFFIX, azurefd.net))",
     }
-    # ios.chat.openai.com is covered by DOMAIN-SUFFIX,openai.com even when an exact
-    # DOMAIN line is not present. Check it semantically rather than requiring a duplicate.
+    # ios.chat.openai.com is covered by DOMAIN-SUFFIX,openai.com.
     semantic_missing = []
     for rule in required:
         if rule in ai_bundle:
@@ -134,6 +145,36 @@ def main() -> None:
         semantic_missing.append(rule)
     if semantic_missing:
         raise RuntimeError("AI semantic checks failed: " + ", ".join(semantic_missing))
+
+    # These formerly went DIRECT or generic overseas. Require precise AI
+    # domains; never permit broad suffixes such as googleapis.com.
+    if any(rule.startswith(("DOMAIN-SUFFIX,google", "DOMAIN-KEYWORD,google")) for rule in gemini_extra):
+        raise RuntimeError("Gemini override must use exact hosts rather than broad Google rules")
+    required_gemini = {
+        "gemini.google.com",
+        "jnn-pa.googleapis.com",
+        "waa-pa.clients6.google.com",
+        "ogads-pa.clients6.google.com",
+        "optimizationguide-pa.googleapis.com",
+        "www.googleapis.com",
+        "ogs.google.com",
+        "ssl.gstatic.com",
+        "fonts.googleapis.com",
+        "www.gstatic.com",
+    }
+    if gemini_extra != {f"DOMAIN,{host}" for host in required_gemini}:
+        raise RuntimeError("Gemini exact-host override list is incomplete or unexpectedly broad")
+    if not gemini_extra.issubset(active_rules(GEMINI_TARGET)):
+        raise RuntimeError("Gemini fine-grained list missing exact-host overrides")
+
+    template = (ROOT / "templates" / "Loon.conf.tpl").read_text(encoding="utf-8")
+    remote_rules = template.split("[Remote Rule]", 1)[1].split("[Host]", 1)[0]
+    if remote_rules.find("{{REMOTE_RULES}}") < 0:
+        raise RuntimeError("Loon template must publish generated Remote Rules")
+    from render_config import BUNDLE_SPECS
+    policies = [spec["policy"] for spec in BUNDLE_SPECS]
+    if policies.index("🤖 AI平台") > policies.index("DIRECT"):
+        raise RuntimeError("Gemini AI bundle must precede DIRECT bundle")
 
 
 if __name__ == "__main__":
